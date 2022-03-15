@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:fyp/components/buttons.dart';
 import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
 import 'package:fyp/components/progress_bar.dart';
 import 'package:fyp/components/round_text.dart';
+import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/services/menu.dart';
+import 'package:fyp/services/validator.dart';
 
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({Key? key}) : super(key: key);
@@ -163,6 +166,72 @@ class ManageFinanceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    double width = MediaQuery.of(context).size.width;
+    String name = "";
+
+    final _formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            MyHeader(
+              height: 200,
+              width: width,
+              color: kCream,
+              child: Column(
+                children: [
+                  const MyBackButton(),
+                  space,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      Text(
+                        'Manage Finances',
+                        style: TextStyle(
+                            fontSize: 30.0, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      SmallButton(title: 'Accounts', route: '/home'),
+                      SmallButton(title: 'Records', route: '/home')
+                    ],
+                  ),
+                  //add minus transaction bar
+                ],
+              ),
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    //title
+                    RoundTextField(
+                        controller: nameController,
+                        title: "Name",
+                        isPassword: false,
+                        onSaved: (String? value) {
+                          name != value;
+                        },
+                        validator: (value) =>
+                            EPValidator.validateName(name: value)),
+
+                    //amount
+                  ],
+                ),
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
   }
 }
