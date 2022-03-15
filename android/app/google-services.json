@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "671026930337",
+    "project_id": "finalyearproject-13d5a",
+    "storage_bucket": "finalyearproject-13d5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:671026930337:android:520b8d3b160f30b786c6e0",
+        "android_client_info": {
+          "package_name": "com.beatrix.fyp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "671026930337-ohk0q449nb23bu0aqanvp828fi461uj5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6l15i0OgS9F8W3GTRy02g_eUvShWPx1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "671026930337-ohk0q449nb23bu0aqanvp828fi461uj5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
