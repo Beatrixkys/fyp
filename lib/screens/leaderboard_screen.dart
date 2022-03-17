@@ -100,10 +100,12 @@ class LeaderboardScreen extends StatelessWidget {
                     ),
                   ),
                   space,
-                  RoundFriend(
-                      title: 'Evan',
-                      route1: '/leaderboard',
-                      route2: '/leaderboard'),
+                  RoundFunctionText(
+                    title: 'Evan',
+                    subtitle: 'evan@gmail.com',
+                    icon1: Icon(Icons.check_outlined),
+                    icon2: Icon(Icons.close_outlined),
+                  ),
                 ],
               ),
             ),

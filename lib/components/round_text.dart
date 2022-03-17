@@ -53,16 +53,18 @@ class RoundText extends StatelessWidget {
   }
 }
 
-class RoundFriend extends StatelessWidget {
+class RoundFunctionText extends StatelessWidget {
   final String title;
-  final String route1;
-  final String route2;
+  final String subtitle;
+  final Icon icon1;
+  final Icon icon2;
 
-  const RoundFriend({
+  const RoundFunctionText({
     Key? key,
     required this.title,
-    required this.route1,
-    required this.route2,
+    required this.subtitle,
+    required this.icon1,
+    required this.icon2,
   }) : super(key: key);
 
   @override
@@ -88,10 +90,13 @@ class RoundFriend extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.check_outlined)),
-            IconButton(
-                onPressed: () {}, icon: const Icon(Icons.close_outlined)),
+            Text(
+              subtitle,
+              style: kSubTextStyle,
+            ),
+            const Spacer(),
+            IconButton(onPressed: () {}, icon: icon1),
+            IconButton(onPressed: () {}, icon: icon2),
           ],
         ),
       ),

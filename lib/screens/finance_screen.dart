@@ -19,9 +19,17 @@ class FinanceScreen extends StatefulWidget {
 class _FinanceScreenState extends State<FinanceScreen> {
   @override
   Widget build(BuildContext context) {
+    //visuals
     final controller = ScrollController();
-    int total = 1000;
     double width = MediaQuery.of(context).size.width;
+    //finances
+    double total = 1000;
+    double incomeTotal = 100;
+    double expenseTotal = 50;
+    List<double> accountsTotal = [1500, 40, 50];
+    List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
+    //goal
+    double overallProgress = 0.5;
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(
@@ -55,7 +63,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
                           borderRadius: BorderRadius.circular(30),
                         ),
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/managefinance');
+                          },
                           child: const Center(
                             child: Text(
                               'Manage',
@@ -90,14 +100,18 @@ class _FinanceScreenState extends State<FinanceScreen> {
 
                   smallSpace,
 
-                  const ProgressBar(percent: 0.5, progress: "50%"),
+                  ProgressBar(
+                      percent: overallProgress,
+                      progress: '${(overallProgress * 100).round()}%'),
                   smallSpace,
                   SizedBox(
                     width: 350,
                     child: Row(
-                      children: const [
-                        ExpenditureCard(title: "Income", amount: "150.00"),
-                        ExpenditureCard(title: "Expense", amount: "50.00"),
+                      children: [
+                        ExpenditureCard(
+                            title: "Income", amount: '$incomeTotal'),
+                        ExpenditureCard(
+                            title: "Expense", amount: '$expenseTotal'),
                         space,
                       ],
                     ),
@@ -112,19 +126,19 @@ class _FinanceScreenState extends State<FinanceScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
+                      children: [
                         AccountsCard(
                             icon: "assets/bank.png",
-                            title: "Bank",
-                            text: "RM1500.00"),
+                            title: accountsTitle[0],
+                            text: "RM ${accountsTotal[0]}"),
                         AccountsCard(
                             icon: "assets/cash.png",
-                            title: "Cash",
-                            text: "RM40.00"),
+                            title: accountsTitle[1],
+                            text: "RM${accountsTotal[1]}"),
                         AccountsCard(
                             icon: "assets/ewallet.png",
-                            title: "E-wallet",
-                            text: "RM50.00"),
+                            title: accountsTitle[2],
+                            text: "RM${accountsTotal[2]}"),
                       ],
                     ),
                   ),
@@ -167,41 +181,45 @@ class ManageFinanceScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    String name = "";
 
-    final _formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
+    List<double> accountsTotal = [1500, 40, 50];
+    List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
+
+    //final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             MyHeader(
-              height: 200,
+              height: 150,
               width: width,
               color: kCream,
               child: Column(
                 children: [
                   const MyBackButton(),
-                  space,
+                  smallSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: const [
                       Text(
                         'Manage Finances',
-                        style: TextStyle(
-                            fontSize: 30.0, fontWeight: FontWeight.w700),
+                        style: kHeadingTextStyle,
                       ),
                     ],
                   ),
+                  const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: const [
-                      SmallButton(title: 'Accounts', route: '/home'),
-                      SmallButton(title: 'Records', route: '/home')
+                      SmallButton(
+                          title: 'Accounts', route: '/home', color: kApricot),
+                      SmallButton(
+                          title: 'Records', route: '/home', color: kApricot)
                     ],
                   ),
+                  space,
                   //add minus transaction bar
                 ],
               ),
@@ -209,27 +227,206 @@ class ManageFinanceScreen extends StatelessWidget {
             Expanded(
                 child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Form(
-                key: _formKey,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text('Existing Data', style: kHeadingTextStyle),
+                      Spacer(),
+                      SmallButton(title: 'Add', route: '/home', color: kApricot)
+                    ],
+                  ),
+                  space,
+                  RoundFunctionText(
+                    title: accountsTitle[0],
+                    subtitle: 'RM ${accountsTotal[0]}',
+                    icon1: const Icon(Icons.edit_outlined),
+                    icon2: const Icon(Icons.delete_outlined),
+                  ),
+                  RoundFunctionText(
+                    title: accountsTitle[1],
+                    subtitle: 'RM${accountsTotal[1]}',
+                    icon1: const Icon(Icons.edit_outlined),
+                    icon2: const Icon(Icons.delete_outlined),
+                  ),
+                  RoundFunctionText(
+                    title: accountsTitle[2],
+                    subtitle: 'RM${accountsTotal[2]}',
+                    icon1: const Icon(Icons.edit_outlined),
+                    icon2: const Icon(Icons.delete_outlined),
+                  ),
+                ],
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AddFinanceScreen extends StatefulWidget {
+  const AddFinanceScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AddFinanceScreen> createState() => _AddFinanceScreenState();
+}
+
+class _AddFinanceScreenState extends State<AddFinanceScreen> {
+  @override
+  Widget build(BuildContext context) {
+    //visuals
+    double width = MediaQuery.of(context).size.width;
+
+    //Form
+    final _formKey = GlobalKey<FormState>();
+    final nameController = TextEditingController();
+    final amountController = TextEditingController();
+
+    String name = "";
+    String amount = "";
+
+    bool records = true;
+
+    var accounts = ['Bank', 'Cash', 'E-Wallet'];
+    String dropdownvalue = accounts[0];
+
+    var record = ['Leisure', 'Work', 'Transport'];
+    String dropdownrecvalue = record[0];
+
+    var recordType = ['Income', 'Expense'];
+    String dropdownrectypevalue = record[0];
+    return Scaffold(
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              MyHeader(
+                height: 150,
+                width: width,
+                color: kCream,
                 child: Column(
                   children: [
-                    //title
+                    const MyBackButton(),
+                    smallSpace,
+                    const Text(
+                      'Add Finances',
+                      style: kHeadingTextStyle,
+                    ),
+                    const Spacer(),
                     RoundTextField(
                         controller: nameController,
-                        title: "Name",
+                        title: "Title",
                         isPassword: false,
                         onSaved: (String? value) {
                           name != value;
                         },
                         validator: (value) =>
-                            EPValidator.validateName(name: value)),
+                            AccRecValidator.validateName(name: value)),
 
-                    //amount
+                    if (records)
+                      Column(
+                        children: [
+                          const Text(
+                            'Records Type',
+                            style: kSubTextStyle,
+                          ),
+                          DropdownButtonFormField(
+                              value: dropdownrectypevalue,
+                              items: recordType.map((String recordType) {
+                                return DropdownMenuItem(
+                                  child: Text(recordType),
+                                  value: recordType,
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownrectypevalue = newValue!;
+                                });
+                              }),
+                        ],
+                      ),
+
+                    //add minus transaction bar
                   ],
                 ),
               ),
-            )),
-          ],
+              Expanded(
+                  child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    RoundDoubleTextField(
+                        controller: amountController,
+                        title: "Amount",
+                        onSaved: (String? value) {
+                          amount != value;
+                        },
+                        validator: (value) =>
+                            AccRecValidator.validateAmount(name: amount)),
+                    space,
+                    if (records)
+                      Column(
+                        children: [
+                          const Text(
+                            'Accounts Type',
+                            style: kSubTextStyle,
+                          ),
+                          DropdownButtonFormField(
+                              value: dropdownvalue,
+                              icon: const Icon(
+                                  Icons.keyboard_arrow_down_outlined),
+                              items: accounts.map((String accounts) {
+                                return DropdownMenuItem(
+                                  child: Text(accounts),
+                                  value: accounts,
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownvalue = newValue!;
+                                });
+                              }),
+                          space,
+                          const Text(
+                            'Record Category',
+                            style: kSubTextStyle,
+                          ),
+                          DropdownButtonFormField(
+                              value: dropdownrecvalue,
+                              icon: const Icon(
+                                  Icons.keyboard_arrow_down_outlined),
+                              items: record.map((String record) {
+                                return DropdownMenuItem(
+                                  child: Text(record),
+                                  value: record,
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropdownrecvalue = newValue!;
+                                });
+                              })
+                        ],
+                      ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/home');
+                      },
+                      child: const Text(
+                        'Save',
+                        style: kButtonTextStyle,
+                      ),
+                      style: kButtonStyle,
+                    ),
+                  ],
+                ),
+              )),
+            ],
+          ),
         ),
       ),
     );

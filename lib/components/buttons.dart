@@ -5,8 +5,10 @@ import '../constant.dart';
 class SmallButton extends StatelessWidget {
   final String title;
   final String route;
+  final Color color;
 
-  const SmallButton({Key? key, required this.title, required this.route})
+  const SmallButton(
+      {Key? key, required this.title, required this.route, required this.color})
       : super(key: key);
 
   @override
@@ -15,7 +17,7 @@ class SmallButton extends StatelessWidget {
       height: 40,
       width: 120,
       decoration: BoxDecoration(
-        color: kCream,
+        color: color,
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextButton(
