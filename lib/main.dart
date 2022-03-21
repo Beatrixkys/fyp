@@ -6,6 +6,7 @@ import 'package:fyp/screens/goals_screen.dart';
 import 'package:fyp/screens/home_screen.dart';
 import 'package:fyp/screens/leaderboard_screen.dart';
 import 'package:fyp/screens/profile_screen.dart';
+import 'package:fyp/screens/setup_profile_accounts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,10 +28,14 @@ class MyApp extends StatelessWidget {
         '/': (context) => const AuthScreen(), //AuthenticationWrapper(),
         '/home': (context) => const HomeScreen(),
         '/finance': (context) => const FinanceScreen(),
+        '/setupprofile': (context) => const SetUpProfileAndAccountsScreen(),
         '/profile': (context) => ProfileScreen(),
         '/leaderboard': (context) => const LeaderboardScreen(),
         '/goals': (context) => const GoalsScreen(),
         '/managefinance': (context) => const ManageFinanceScreen(),
+        '/addfinance': (context) => const AddFinanceScreen(),
+        '/managegoals': (context) => const ManageGoalsScreen(),
+        '/addgoals': (context) => const AddGoalsScreen(),
       },
     );
   }

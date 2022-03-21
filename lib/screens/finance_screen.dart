@@ -94,7 +94,7 @@ class _FinanceScreenState extends State<FinanceScreen> {
                   space,
                   const TitleCard(
                     title: "Overview of the Month",
-                    route: "/home",
+                    route: "/goals",
                     button: "See More",
                   ),
 
@@ -119,7 +119,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
                   space,
 
                   const TitleCard(
-                      title: "Accounts", route: "/home", button: "Manage"),
+                      title: "Accounts",
+                      route: "/managefinance",
+                      button: "Manage"),
 
                   space,
                   SingleChildScrollView(
@@ -145,7 +147,9 @@ class _FinanceScreenState extends State<FinanceScreen> {
                   //create scrollable accounts
                   space,
                   const TitleCard(
-                      title: "Transaction", route: "/home", button: "Manage"),
+                      title: "Transaction",
+                      route: "/managefinance",
+                      button: "Manage"),
                   space,
                   Center(
                     child: Row(
@@ -209,12 +213,14 @@ class ManageFinanceScreen extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
+
+                  //TODO: use button to switch state so change to non constant
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: const [
                       SmallButton(
-                          title: 'Accounts', route: '/home', color: kApricot),
+                          title: 'Accounts', route: '/home', color: kCream),
                       SmallButton(
                           title: 'Records', route: '/home', color: kApricot)
                     ],
@@ -235,7 +241,8 @@ class ManageFinanceScreen extends StatelessWidget {
                     children: const [
                       Text('Existing Data', style: kHeadingTextStyle),
                       Spacer(),
-                      SmallButton(title: 'Add', route: '/home', color: kApricot)
+                      SmallButton(
+                          title: 'Add', route: '/addfinance', color: kApricot)
                     ],
                   ),
                   space,
@@ -275,6 +282,11 @@ class AddFinanceScreen extends StatefulWidget {
 }
 
 class _AddFinanceScreenState extends State<AddFinanceScreen> {
+  String dropdownvalue = 'Bank';
+
+  String dropdownrecvalue = 'Leisure';
+
+  String dropdownrectypevalue = 'Income';
   @override
   Widget build(BuildContext context) {
     //visuals
@@ -291,13 +303,10 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
     bool records = true;
 
     var accounts = ['Bank', 'Cash', 'E-Wallet'];
-    String dropdownvalue = accounts[0];
 
     var record = ['Leisure', 'Work', 'Transport'];
-    String dropdownrecvalue = record[0];
 
     var recordType = ['Income', 'Expense'];
-    String dropdownrectypevalue = record[0];
     return Scaffold(
       body: SafeArea(
         child: Form(
@@ -305,7 +314,7 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
           child: Column(
             children: [
               MyHeader(
-                height: 150,
+                height: 250,
                 width: width,
                 color: kCream,
                 child: Column(
@@ -326,28 +335,34 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                         },
                         validator: (value) =>
                             AccRecValidator.validateName(name: value)),
-
+                    const Spacer(),
                     if (records)
-                      Column(
-                        children: [
-                          const Text(
-                            'Records Type',
-                            style: kSubTextStyle,
-                          ),
-                          DropdownButtonFormField(
+                      SizedBox(
+                        width: 300,
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Records Type',
+                              style: kSubTextStyle,
+                            ),
+                            DropdownButtonFormField(
                               value: dropdownrectypevalue,
-                              items: recordType.map((String recordType) {
-                                return DropdownMenuItem(
-                                  child: Text(recordType),
-                                  value: recordType,
-                                );
-                              }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   dropdownrectypevalue = newValue!;
                                 });
-                              }),
-                        ],
+                              },
+                              items: recordType.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem(
+                                  child: Text(value),
+                                  value: value,
+                                );
+                              }).toList(),
+                            ),
+                            space,
+                          ],
+                        ),
                       ),
 
                     //add minus transaction bar
@@ -359,6 +374,7 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
+                    space,
                     RoundDoubleTextField(
                         controller: amountController,
                         title: "Amount",
@@ -369,58 +385,69 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                             AccRecValidator.validateAmount(name: amount)),
                     space,
                     if (records)
-                      Column(
-                        children: [
-                          const Text(
-                            'Accounts Type',
-                            style: kSubTextStyle,
-                          ),
-                          DropdownButtonFormField(
+                      SizedBox(
+                        width: 300,
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Accounts Type',
+                              style: kSubTextStyle,
+                            ),
+                            DropdownButtonFormField(
                               value: dropdownvalue,
                               icon: const Icon(
                                   Icons.keyboard_arrow_down_outlined),
-                              items: accounts.map((String accounts) {
-                                return DropdownMenuItem(
-                                  child: Text(accounts),
-                                  value: accounts,
-                                );
-                              }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   dropdownvalue = newValue!;
                                 });
-                              }),
-                          space,
-                          const Text(
-                            'Record Category',
-                            style: kSubTextStyle,
-                          ),
-                          DropdownButtonFormField(
+                              },
+                              items: accounts.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem(
+                                  child: Text(value),
+                                  value: value,
+                                );
+                              }).toList(),
+                            ),
+                            space,
+                            const Text(
+                              'Record Category',
+                              style: kSubTextStyle,
+                            ),
+                            DropdownButtonFormField(
                               value: dropdownrecvalue,
                               icon: const Icon(
                                   Icons.keyboard_arrow_down_outlined),
-                              items: record.map((String record) {
-                                return DropdownMenuItem(
-                                  child: Text(record),
-                                  value: record,
-                                );
-                              }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   dropdownrecvalue = newValue!;
                                 });
-                              })
-                        ],
+                              },
+                              items: record.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem(
+                                  child: Text(value),
+                                  value: value,
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
                       ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home');
-                      },
-                      child: const Text(
-                        'Save',
-                        style: kButtonTextStyle,
+                    space,
+                    SizedBox(
+                      width: 300,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/home');
+                        },
+                        child: const Text(
+                          'Save',
+                          style: kButtonTextStyle,
+                        ),
+                        style: kButtonStyle,
                       ),
-                      style: kButtonStyle,
                     ),
                   ],
                 ),

@@ -37,37 +37,14 @@ class GoalsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
-                    children: [
-                      const Text(
-                        'Goals',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          color: kSubTitleTextColor,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        height: 40,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: kCream,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: TextButton(
-                          onPressed: () {},
-                          child: const Center(
-                            child: Text(
-                              'Manage',
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ),
+                    children: const [
+                      Text('Goals',
+                          textAlign: TextAlign.start, style: kHeadingTextStyle),
+                      Spacer(),
+                      SmallButton(
+                          title: "Manage",
+                          route: "/managegoals",
+                          color: kCream),
                     ],
                   ),
                   const ProgressBar(percent: 0.5, progress: "50%"),
@@ -76,7 +53,9 @@ class GoalsScreen extends StatelessWidget {
             ),
 
             const TitleCard(
-                title: "Current Goals", route: "/finance", button: "Manage"),
+                title: "Current Goals",
+                route: "/managegoals",
+                button: "Manage"),
             space,
 
             SizedBox(
@@ -167,7 +146,8 @@ class ManageGoalsScreen extends StatelessWidget {
                     children: const [
                       Text('Existing Goals', style: kHeadingTextStyle),
                       Spacer(),
-                      SmallButton(title: 'Add', route: '/home', color: kApricot)
+                      SmallButton(
+                          title: 'Add', route: '/addgoals', color: kApricot)
                     ],
                   ),
                   space,
@@ -207,6 +187,8 @@ class AddGoalsScreen extends StatefulWidget {
 }
 
 class _AddGoalsScreenState extends State<AddGoalsScreen> {
+  String dropdownmeasurevalue = 'Amount';
+  String dropdownvalue = 'Day';
   @override
   Widget build(BuildContext context) {
     //visuals
@@ -219,12 +201,8 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
 
     String name = "";
     String amount = "";
-
-    var time = ['Day', 'Month', 'Year'];
-    String dropdownvalue = time[0];
-
-    var goalMeasureType = ['Amount', 'Percentage'];
-    String dropdownmeasurevalue = goalMeasureType[0];
+    List<String> goalMeasureType = ['Amount', 'Percentage'];
+    List<String> timing = ['Day', 'Month', 'Year'];
 
     return Scaffold(
       body: SafeArea(
@@ -233,18 +211,26 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
           child: Column(
             children: [
               MyHeader(
-                height: 150,
+                height: 80,
                 width: width,
                 color: kCream,
                 child: Column(
-                  children: [
-                    const MyBackButton(),
+                  children: const [
+                    MyBackButton(),
                     smallSpace,
-                    const Text(
+                    Text(
                       'Add Goals',
                       style: kHeadingTextStyle,
                     ),
-                    const Spacer(),
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    space,
                     RoundTextField(
                         controller: nameController,
                         title: "Goal Name",
@@ -254,59 +240,66 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
                         },
                         validator: (value) =>
                             AccRecValidator.validateName(name: value)),
-                  ],
-                ),
-              ),
-              Expanded(
-                  child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
+                    space,
                     const Text(
                       'Goal Measure Type',
                       style: kSubTextStyle,
                     ),
+
                     DropdownButton(
-                        value: dropdownvalue,
-                        icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                        items: goalMeasureType.map((String goalMeasureType) {
-                          return DropdownMenuItem(
-                            child: Text(goalMeasureType),
-                            value: goalMeasureType,
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            dropdownvalue = newValue!;
-                          });
-                        }),
+                      value: dropdownmeasurevalue.isNotEmpty
+                          ? dropdownmeasurevalue
+                          : null,
+                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownmeasurevalue = newValue!;
+                        });
+                      },
+                      items: goalMeasureType
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          child: Text(value),
+                          value: value,
+                        );
+                      }).toList(),
+                    ),
+
+                    //Goal Amount or Percemt
                     RoundDoubleTextField(
                         controller: amountController,
-                        title: "Amount",
+                        title: "Goal Amount",
                         onSaved: (String? value) {
                           amount != value;
                         },
                         validator: (value) =>
                             AccRecValidator.validateAmount(name: amount)),
                     space,
+
+                    //TIME
                     const Text(
                       'Time Measure Type ',
                       style: kSubTextStyle,
                     ),
+
                     DropdownButton(
-                        value: dropdownmeasurevalue,
-                        icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                        items: goalMeasureType.map((String time) {
-                          return DropdownMenuItem(
-                            child: Text(time),
-                            value: time,
-                          );
-                        }).toList(),
-                        onChanged: (String? time) {
-                          setState(() {
-                            dropdownmeasurevalue = time!;
-                          });
-                        }),
+                      value: dropdownvalue.isNotEmpty ? dropdownvalue : null,
+                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          dropdownvalue = newValue!;
+                        });
+                      },
+                      items:
+                          timing.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem(
+                          child: Text(value),
+                          value: value,
+                        );
+                      }).toList(),
+                    ),
+
+                    //Time Amount
                     RoundDoubleTextField(
                         controller: amountController,
                         title: "Goal Time Period",
@@ -315,15 +308,20 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
                         },
                         validator: (value) =>
                             AccRecValidator.validateAmount(name: amount)),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/home');
-                      },
-                      child: const Text(
-                        'Save',
-                        style: kButtonTextStyle,
+                    space,
+                    //save button
+                    SizedBox(
+                      width: 300,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/home');
+                        },
+                        child: const Text(
+                          'Save',
+                          style: kButtonTextStyle,
+                        ),
+                        style: kButtonStyle,
                       ),
-                      style: kButtonStyle,
                     ),
                   ],
                 ),

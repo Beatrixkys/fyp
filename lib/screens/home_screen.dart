@@ -15,9 +15,14 @@ class HomeScreen extends StatelessWidget {
     //visuals
     double width = MediaQuery.of(context).size.width;
 
+    //profile
+    String profileImage = 'assets/owl.png';
+
     //goals
     double overallProgress = 0.8;
     List<double> percent = [0.75, 0.6, 0.3];
+    List<String> goalsTarget = ['50% income', "20% expense", "10% savings"];
+    List<String> goalsTitle = ['Save', 'Reduce', 'Invest'];
 
     //finances
     double total = 1000;
@@ -58,11 +63,11 @@ class HomeScreen extends StatelessWidget {
                             circularStrokeCap: CircularStrokeCap.round,
                             progressColor: kCream,
                             backgroundColor: kApricot,
-                            center: const CircleAvatar(
+                            center: CircleAvatar(
                               backgroundColor: kCream,
                               radius: 50.0,
                               backgroundImage: AssetImage(
-                                'assets/owl.png',
+                                profileImage,
                               ),
                             ),
                           ),
@@ -92,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   const TitleCard(
                     title: "Overview of the Month",
-                    route: "/",
+                    route: "/finance",
                     button: "See More",
                   ),
 
@@ -123,20 +128,25 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         GoalCard(
                             percent: percent[0],
-                            title: "Save",
-                            text: "50% of income"),
+                            title: goalsTitle[0],
+                            text: goalsTarget[0]),
                         GoalCard(
                             percent: percent[1],
-                            title: "Reduce",
-                            text: "20% of expense"),
+                            title: goalsTitle[1],
+                            text: goalsTarget[1]),
                         GoalCard(
                             percent: percent[2],
-                            title: "Invest",
-                            text: "10% of savings"),
+                            title: goalsTitle[2],
+                            text: goalsTarget[2]),
                       ],
                     ),
                   ),
 
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/setupprofile');
+                      },
+                      icon: const Icon(Icons.portrait_outlined)),
                   //Insert list view for Finance transfaction hisotry, retrieve from database, create placeholder for now,
                 ],
               ),

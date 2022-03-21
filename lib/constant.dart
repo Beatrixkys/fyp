@@ -36,7 +36,7 @@ const kButtonTextStyle =
     TextStyle(color: Colors.black54, fontWeight: FontWeight.w700, fontSize: 16);
 
 final kButtonStyle = ButtonStyle(
-  backgroundColor: MaterialStateProperty.all(Colors.white),
+  backgroundColor: MaterialStateProperty.all(kApricot),
   padding: MaterialStateProperty.all(
       const EdgeInsets.symmetric(vertical: 10, horizontal: 20)),
   fixedSize: MaterialStateProperty.all(const Size.fromWidth(450)),

@@ -21,7 +21,9 @@ class SmallButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, route);
+        },
         child: Center(
           child: Text(
             title,

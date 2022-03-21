@@ -10,8 +10,13 @@ class LeaderboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = ScrollController();
-
     double width = MediaQuery.of(context).size.width;
+
+    List<String> friends = ["Beatrix", "Yang"];
+    List<String> friendProgress = ["40%", "60%"];
+
+    List<String> friendsReq = ["Evan", "Lee"];
+    List<String> friendsReqEmail = ["evan@gmail.com", "lee@gmail.com"];
     return Scaffold(
       drawer: const NavDrawer(),
       appBar: AppBar(
@@ -72,8 +77,11 @@ class LeaderboardScreen extends StatelessWidget {
               width: 350,
 
               child: Column(
-                children: const [
-                  RoundText(number: "1", name: "Beatrix", progress: "40"),
+                children: [
+                  RoundText(
+                      number: "1",
+                      name: friends[0],
+                      progress: friendProgress[0]),
                 ],
               ), //populate with numbers from the database
             ),
@@ -86,11 +94,11 @@ class LeaderboardScreen extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                   color: kTan, borderRadius: BorderRadius.circular(40)),
-              height: 200,
+              height: 250,
               width: 400,
               child: Column(
-                children: const [
-                  Text(
+                children: [
+                  const Text(
                     'Pending Friend Requests',
                     textAlign: TextAlign.left,
                     style: TextStyle(
@@ -101,10 +109,17 @@ class LeaderboardScreen extends StatelessWidget {
                   ),
                   space,
                   RoundFunctionText(
-                    title: 'Evan',
-                    subtitle: 'evan@gmail.com',
-                    icon1: Icon(Icons.check_outlined),
-                    icon2: Icon(Icons.close_outlined),
+                    title: friendsReq[0],
+                    subtitle: friendsReqEmail[0],
+                    icon1: const Icon(Icons.check_outlined),
+                    icon2: const Icon(Icons.close_outlined),
+                  ),
+                  space,
+                  RoundFunctionText(
+                    title: friendsReq[1],
+                    subtitle: friendsReqEmail[1],
+                    icon1: const Icon(Icons.check_outlined),
+                    icon2: const Icon(Icons.close_outlined),
                   ),
                 ],
               ),

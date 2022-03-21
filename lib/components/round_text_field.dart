@@ -26,8 +26,8 @@ class RoundTextField extends StatelessWidget {
         width: 300,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            border:
-                Border.all(width: 1, color: kCream, style: BorderStyle.solid)),
+            border: Border.all(
+                width: 1, color: kSteelBlue, style: BorderStyle.solid)),
         child: TextFormField(
           obscureText: isPassword ? true : false,
           decoration: InputDecoration(

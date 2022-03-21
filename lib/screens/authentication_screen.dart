@@ -24,7 +24,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final nameController = TextEditingController();
 
   final controller = ScrollController();
-  bool showSignIn = true;
+  bool showSignIn = false;
   bool loading = false;
 
   @override
@@ -66,7 +66,7 @@ class _AuthScreenState extends State<AuthScreen> {
                         },
                         validator: (value) =>
                             EPValidator.validateName(name: value))),
-
+                  space,
                   RoundTextField(
                     controller: emailController,
                     title: "Email",
@@ -92,6 +92,11 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
 
                   smallSpace,
+                  if (showSignIn == true)
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text("Forget Password?"),
+                    ),
                   // ignore: sized_box_for_whitespace
                   Container(
                     width: 300,

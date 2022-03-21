@@ -74,6 +74,7 @@ class RoundFunctionText extends StatelessWidget {
       child: Container(
         width: 400,
         height: 50,
+        margin: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(40),
           border:
