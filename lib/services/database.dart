@@ -23,6 +23,7 @@ class DatabaseService {
 
   // on convertit un snapshot en user
   // snapshot est une réponse de firebase
+  
   MyUserData _userFromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
     var data = snapshot.data();

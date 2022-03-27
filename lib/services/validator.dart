@@ -1,4 +1,11 @@
-class EPValidator {
+import 'package:flutter/material.dart';
+
+
+
+
+class EPValidator{
+  
+ 
   static String? validateName({required String name}) {
     if (name.isEmpty) {
       return 'Name can\'t be empty';

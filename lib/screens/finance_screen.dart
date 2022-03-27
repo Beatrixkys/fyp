@@ -179,8 +179,21 @@ class _FinanceScreenState extends State<FinanceScreen> {
   }
 }
 
-class ManageFinanceScreen extends StatelessWidget {
+class ManageFinanceScreen extends StatefulWidget {
   const ManageFinanceScreen({Key? key}) : super(key: key);
+
+  @override
+  State<ManageFinanceScreen> createState() => _ManageFinanceScreenState();
+}
+
+class _ManageFinanceScreenState extends State<ManageFinanceScreen> {
+  bool accounts = true;
+
+  void toggleView() {
+    setState(() {
+      accounts = !accounts;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -213,16 +226,35 @@ class ManageFinanceScreen extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-
-                  //TODO: use button to switch state so change to non constant
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      SmallButton(
-                          title: 'Accounts', route: '/home', color: kCream),
-                      SmallButton(
-                          title: 'Records', route: '/home', color: kApricot)
+                    children: [
+                      const SizedBox(
+                        height: 40,
+                        width: 120,
+                        child: Text(
+                          "Change View:",
+                          style: kSubTextStyle,
+                        ),
+                      ),
+                      Container(
+                        height: 40,
+                        width: 120,
+                        decoration: BoxDecoration(
+                          color: kApricot,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: TextButton(
+                          onPressed: () => toggleView(),
+                          child: Center(
+                            child: Text(
+                              accounts ? "Accounts" : "Records ",
+                              style: kButtonTextStyle,
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   space,
@@ -282,31 +314,38 @@ class AddFinanceScreen extends StatefulWidget {
 }
 
 class _AddFinanceScreenState extends State<AddFinanceScreen> {
+  //Form
   String dropdownvalue = 'Bank';
-
   String dropdownrecvalue = 'Leisure';
-
   String dropdownrectypevalue = 'Income';
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final amountController = TextEditingController();
+
+//condition for toggle view
+  bool records = true;
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     //visuals
     double width = MediaQuery.of(context).size.width;
 
-    //Form
-    final _formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
-    final amountController = TextEditingController();
-
+    //form (changes within the state)
     String name = "";
     String amount = "";
 
-    bool records = true;
-
+// Mock Database
     var accounts = ['Bank', 'Cash', 'E-Wallet'];
-
     var record = ['Leisure', 'Work', 'Transport'];
-
     var recordType = ['Income', 'Expense'];
+
     return Scaffold(
       body: SafeArea(
         child: Form(

@@ -147,6 +147,12 @@ class HomeScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/setupprofile');
                       },
                       icon: const Icon(Icons.portrait_outlined)),
+
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/biosignin');
+                      },
+                      icon: const Icon(Icons.fingerprint)),
                   //Insert list view for Finance transfaction hisotry, retrieve from database, create placeholder for now,
                 ],
               ),

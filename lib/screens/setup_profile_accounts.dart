@@ -15,15 +15,22 @@ class SetUpProfileAndAccountsScreen extends StatefulWidget {
 
 class _SetUpProfileAndAccountsScreenState
     extends State<SetUpProfileAndAccountsScreen> {
+//Form
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     //visuals
     double width = MediaQuery.of(context).size.width;
-
-    //Form
-    final _formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
-    final amountController = TextEditingController();
 
     String name = "";
     String amount = "";
@@ -102,8 +109,9 @@ class _SetUpProfileAndAccountsScreenState
                       ),
                     ),
                     space,
-                    RoundDoubleTextField(
+                    RoundTextField(
                         controller: nameController,
+                        isPassword: false,
                         title: "Accounts Name",
                         onSaved: (String? value) {
                           name != value;

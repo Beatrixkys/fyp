@@ -3,14 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
 import 'package:fyp/constant.dart';
-//import 'package:fyp/services/auth.dart';
+import 'package:fyp/services/auth.dart';
 import 'package:fyp/services/menu.dart';
 
-class ProfileScreen extends StatelessWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
   final controller = ScrollController();
-  //final AuthService _auth = AuthService();
+
+  final AuthService _auth = AuthService();
+
   @override
   Widget build(BuildContext context) {
     //user
@@ -75,8 +82,8 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 child: TextButton(
                                   onPressed: () async {
+                                    await _auth.signOut();
                                     Navigator.pushNamed(context, '/');
-                                    //await _auth.signOut();
                                   },
                                   child: const Center(
                                     child: Text(

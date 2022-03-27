@@ -30,10 +30,17 @@ class AuthService {
 
   Future register(
       String email, String password, String name, BuildContext context) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user;
+
     try {
       UserCredential result = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: password);
-      User? user = result.user;
+
+      user = result.user;
+      await user!.updateDisplayName(name);
+      await user.reload();
+      user = auth.currentUser;
 
       if (user == null) {
         throw Exception("No user found");

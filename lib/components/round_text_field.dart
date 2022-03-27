@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fyp/constant.dart';
 
 class RoundTextField extends StatelessWidget {
   final String title;
@@ -22,22 +21,20 @@ class RoundTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.center,
-      child: Container(
-        width: 300,
-        decoration: BoxDecoration(
+      width: 300,
+      child: TextFormField(
+        obscureText: isPassword ? true : false,
+        decoration: InputDecoration(
+          hintText: title,
+          contentPadding: const EdgeInsets.all(15),
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-                width: 1, color: kSteelBlue, style: BorderStyle.solid)),
-        child: TextFormField(
-          obscureText: isPassword ? true : false,
-          decoration: InputDecoration(
-              hintText: title,
-              contentPadding: const EdgeInsets.all(15),
-              border: InputBorder.none),
-          onSaved: onSaved,
-          controller: controller,
-          validator: validator,
+          ),
+          labelText: title,
         ),
+        onSaved: onSaved,
+        controller: controller,
+        validator: validator,
       ),
     );
   }
@@ -60,24 +57,22 @@ class RoundDoubleTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 300,
       alignment: Alignment.center,
-      child: Container(
-        width: 300,
-        decoration: BoxDecoration(
+      child: TextFormField(
+        decoration: InputDecoration(
+          hintText: title,
+          contentPadding: const EdgeInsets.all(15),
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-                width: 1, color: kSteelBlue, style: BorderStyle.solid)),
-        child: TextFormField(
-          decoration: InputDecoration(
-              hintText: title,
-              contentPadding: const EdgeInsets.all(15),
-              border: InputBorder.none),
-          onSaved: onSaved,
-          controller: controller,
-          validator: validator,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+          labelText: title,
         ),
+        onSaved: onSaved,
+        controller: controller,
+        validator: validator,
+        keyboardType: TextInputType.number,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       ),
     );
   }

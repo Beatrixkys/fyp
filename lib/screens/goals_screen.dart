@@ -189,18 +189,28 @@ class AddGoalsScreen extends StatefulWidget {
 class _AddGoalsScreenState extends State<AddGoalsScreen> {
   String dropdownmeasurevalue = 'Amount';
   String dropdownvalue = 'Day';
+//Form
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final amountController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    amountController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     //visuals
     double width = MediaQuery.of(context).size.width;
 
-    //Form
-    final _formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController();
-    final amountController = TextEditingController();
-
+    //initialised within the state
     String name = "";
     String amount = "";
+
+    //mock database
     List<String> goalMeasureType = ['Amount', 'Percentage'];
     List<String> timing = ['Day', 'Month', 'Year'];
 
