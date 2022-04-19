@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/models/user.dart';
 import 'package:fyp/services/auth.dart';
+import 'package:fyp/services/database.dart';
 import 'package:fyp/services/menu.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,18 +18,23 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final controller = ScrollController();
 
-  final AuthService _auth = AuthService();
+  final FirebaseAuth _authUser = FirebaseAuth.instance;
 
+//TODO!
+//1. Create a ListTile for User
+//2. Create a ListBuilder for User (do in the same file)
+
+  final AuthService _auth = AuthService();
+//push data into firebase here
   @override
   Widget build(BuildContext context) {
-    //user
-    String personaPic = 'assets/owl.png';
-    String userName = 'Beatrix Kang';
-    String email = 'beatrixkys@gmail.com';
+    final User? userFirebase = _authUser.currentUser;
+    MyUserData? userData;
+    //PersonaData? myPersonaData;
 
+    Stream<MyUserData?> myUserData = DatabaseService(userFirebase!.uid).user;
     //persona
-    String personaName = 'Owl';
-    String personaType = '-Consistency focused';
+    String personaPic = 'assets/owl.png';
 
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -62,15 +69,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                userName,
-                                textAlign: TextAlign.start,
-                                style: kHeadingTextStyle,
+                              StreamBuilder<MyUserData?>(
+                                stream: myUserData,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    userData = snapshot.data;
+                                    var value = userData!.name;
+                                    return Text(
+                                      value,
+                                      textAlign: TextAlign.start,
+                                      style: kHeadingTextStyle,
+                                    );
+                                  }
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                },
                               ),
-                              Text(
-                                email,
-                                textAlign: TextAlign.start,
-                                style: kSubTextStyle,
+                              StreamBuilder<MyUserData?>(
+                                stream: myUserData,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    userData = snapshot.data;
+                                    var value = userData!.email;
+                                    return Text(
+                                      value,
+                                      textAlign: TextAlign.start,
+                                      style: kSubTextStyle,
+                                    );
+                                  }
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                },
                               ),
                               space,
                               Container(
@@ -105,8 +134,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const Text('PERSONA TYPE', style: kTitleTextstyle),
             //use dtb to draw information on persona stype
-            Text(personaName, style: kHeadingTextStyle),
-            Text(personaType, style: kSubTextStyle),
+            StreamBuilder<MyUserData?>(
+              stream: myUserData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  userData = snapshot.data;
+                  var value = userData!.personaname;
+                  return Text(
+                    value,
+                    textAlign: TextAlign.start,
+                    style: kHeadingTextStyle,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+
+            StreamBuilder<MyUserData?>(
+              stream: myUserData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  userData = snapshot.data;
+                  var value = userData!.personaDescription;
+                  return Text(
+                    value,
+                    textAlign: TextAlign.start,
+                    style: kSubTextStyle,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+
+/*
+            StreamBuilder<PersonaData>(
+              stream: DatabaseService('P002').persona,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return Text('Error = ${snapshot.error}');
+                if (snapshot.hasData) {
+                  myPersonaData = snapshot.data;
+                  var value = myPersonaData!.name;
+                  return Text(
+                    value,
+                    style: kHeadingTextStyle,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
+            StreamBuilder<PersonaData>(
+              stream: DatabaseService('P001').persona,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) return Text('Error = ${snapshot.error}');
+                if (snapshot.hasData) {
+                  myPersonaData = snapshot.data;
+                  var value = myPersonaData!.description;
+                  return Text(
+                    value,
+                    style: kSubTextStyle,
+                  );
+                }
+                return const Center(child: CircularProgressIndicator());
+              },
+            ), */
             const Divider(
               height: 80.0,
               color: kSteelBlue,
@@ -118,19 +208,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   PersonaCard(
-                      icon: "assets/eagle.png",
-                      title: "Eagle",
-                      action: '/eaglePersona'), //switch cases in the page below
+                    icon: "assets/eagle.png",
+                    title: "Eagle",
+                    user: userFirebase.uid,
+                    personaname: "Eagle",
+                    personaDescription: "Amount Based",
+                  ), //switch cases in the page below
                   PersonaCard(
-                      icon: "assets/pigeon.png",
-                      title: "Pigeon",
-                      action: '/pigonPersona'),
+                    icon: "assets/pigeon.png",
+                    title: "Pigeon",
+                    user: userFirebase.uid,
+                    personaname: "Pigeon",
+                    personaDescription: "Percentage Based",
+                  ),
                   PersonaCard(
-                      icon: "assets/owl.png",
-                      title: "Owl",
-                      action: '/owlPersona'),
+                    icon: "assets/owl.png",
+                    title: "Owl",
+                    user: userFirebase.uid,
+                    personaname: "Owl",
+                    personaDescription: "Consistency Based",
+                  ),
                 ],
               ),
             ),
@@ -143,3 +242,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 //change goals pop up
+

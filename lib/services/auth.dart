@@ -42,10 +42,13 @@ class AuthService {
       await user.reload();
       user = auth.currentUser;
 
+      //add user to database
+
       if (user == null) {
         throw Exception("No user found");
       } else {
-        DatabaseService(user.uid);
+        //create new user document to the database
+        await DatabaseService(user.uid).saveUser(name, email);
       }
       return _userFromFirebaseUser(user);
     } on FirebaseAuthException catch (e) {

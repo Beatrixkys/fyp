@@ -13,9 +13,9 @@ class LocalAuthApi {
     //if (!isAvailable) return false;
     try {
       if (isBioAvailable && isAvailable) {
-        List<BiometricType> biometricTypes =
-            await _bioauth.getAvailableBiometrics();
-        print(biometricTypes);
+        //List<BiometricType> biometricTypes =
+            //await _bioauth.getAvailableBiometrics();
+        //print(biometricTypes);
 
         isAuthenticated = await _bioauth.authenticate(
           localizedReason: 'Scan to Authenticate',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/services/database.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 //Finances
@@ -195,19 +196,25 @@ class GoalCard extends StatelessWidget {
 class PersonaCard extends StatelessWidget {
   final String icon;
   final String title;
-  final String action;
+  final String user;
+  final String personaname;
+  final String personaDescription; 
 
   const PersonaCard({
     Key? key,
     required this.icon,
     required this.title,
-    required this.action,
+    required this.user, 
+    required this.personaname, 
+    required this.personaDescription, 
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {}, //update database details
+      onTap: () {
+        DatabaseService(user).updateUser(personaname, personaDescription);
+      }, //update database details
       child: Container(
         height: 160,
         width: 120,

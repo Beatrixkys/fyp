@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp/components/buttons.dart';
 import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
@@ -7,7 +8,6 @@ import 'package:fyp/components/round_text.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/services/menu.dart';
-import 'package:fyp/services/validator.dart';
 
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({Key? key}) : super(key: key);
@@ -323,7 +323,10 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
   final amountController = TextEditingController();
 
 //condition for toggle view
+//TODO!: create toggle button for add screen as well 
   bool records = true;
+  final nameVal =
+      MultiValidator([RequiredValidator(errorText: 'Field is Required')]);
 
   @override
   void dispose() {
@@ -372,8 +375,7 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                         onSaved: (String? value) {
                           name != value;
                         },
-                        validator: (value) =>
-                            AccRecValidator.validateName(name: value)),
+                        validator: nameVal),
                     const Spacer(),
                     if (records)
                       SizedBox(
@@ -420,8 +422,7 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                         onSaved: (String? value) {
                           amount != value;
                         },
-                        validator: (value) =>
-                            AccRecValidator.validateAmount(name: amount)),
+                        validator: nameVal),
                     space,
                     if (records)
                       SizedBox(

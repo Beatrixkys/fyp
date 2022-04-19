@@ -31,8 +31,7 @@ class _BioAuthScreenState extends State<BioAuthScreen> {
                         textAlign: TextAlign.center,
                       ),
                       space,
-                      //TODO: fix the async issue
-                      //seems to be a
+                     
                       IconButton(
                         icon: const Icon(Icons.fingerprint),
                         iconSize: 100,

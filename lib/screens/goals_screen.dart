@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp/components/buttons.dart';
 import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
@@ -7,7 +8,6 @@ import 'package:fyp/components/round_text.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/services/menu.dart';
-import 'package:fyp/services/validator.dart';
 
 class GoalsScreen extends StatelessWidget {
   const GoalsScreen({Key? key}) : super(key: key);
@@ -194,6 +194,8 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
   final nameController = TextEditingController();
   final amountController = TextEditingController();
 
+  final nameVal =
+      MultiValidator([RequiredValidator(errorText: 'Field is Required')]);
   @override
   void dispose() {
     nameController.dispose();
@@ -242,14 +244,14 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
                   children: [
                     space,
                     RoundTextField(
-                        controller: nameController,
-                        title: "Goal Name",
-                        isPassword: false,
-                        onSaved: (String? value) {
-                          name != value;
-                        },
-                        validator: (value) =>
-                            AccRecValidator.validateName(name: value)),
+                      controller: nameController,
+                      title: "Goal Name",
+                      isPassword: false,
+                      onSaved: (String? value) {
+                        name != value;
+                      },
+                      validator: nameVal,
+                    ),
                     space,
                     const Text(
                       'Goal Measure Type',
@@ -277,13 +279,13 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
 
                     //Goal Amount or Percemt
                     RoundDoubleTextField(
-                        controller: amountController,
-                        title: "Goal Amount",
-                        onSaved: (String? value) {
-                          amount != value;
-                        },
-                        validator: (value) =>
-                            AccRecValidator.validateAmount(name: amount)),
+                      controller: amountController,
+                      title: "Goal Amount",
+                      onSaved: (String? value) {
+                        amount != value;
+                      },
+                      validator: nameVal,
+                    ),
                     space,
 
                     //TIME
@@ -316,14 +318,17 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
                         onSaved: (String? value) {
                           amount != value;
                         },
-                        validator: (value) =>
-                            AccRecValidator.validateAmount(name: amount)),
+                        validator: nameVal),
                     space,
                     //save button
                     SizedBox(
                       width: 300,
                       child: ElevatedButton(
                         onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            amount = amountController.value.text;
+                            name = nameController.value.text;
+                          }
                           Navigator.pushNamed(context, '/home');
                         },
                         child: const Text(
