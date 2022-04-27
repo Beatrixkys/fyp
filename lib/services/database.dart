@@ -71,6 +71,15 @@ class DatabaseService {
         .set({'name': name, 'amount': amount});
   }
 
+  Future<void> deleteAccount(String docid) async {
+    //doc will create a new uid of Database service
+    return await accountsCollection
+        .doc(uid)
+        .collection('accountsdetails')
+        .doc(docid)
+        .delete();
+  }
+
 //GOAL
 //add a new goal
   Future<void> saveGoal(int amount, String target, String title,
@@ -106,6 +115,17 @@ class DatabaseService {
     });
   }
 
+
+  Future<void> deleteGoal(String docid) async {
+    //doc will create a new uid of Database service
+    return await goalsCollection
+        .doc(uid)
+        .collection('goalsdetails')
+        .doc(docid)
+        .delete();
+  }
+
+
   //RECORD
 //add a new goal
   Future<void> saveRecord(String name, int amount, String recordtype,
@@ -139,13 +159,20 @@ class DatabaseService {
       'accname': accname,
     });
   }
+
+   Future<void> deleteRecord(String docid) async {
+    //doc will create a new uid of Database service
+    return await recordsCollection
+        .doc(uid)
+        .collection('recordsdetails')
+        .doc(docid)
+        .delete();
+  }
+
 //READ
 
 //TODO!Convert to use this function instead of Stream Builder
 
-//Convert a SINGLE user snapshot
-//we convert a user snapshot
-//snapshot is a response from firebase
 
   MyUserData _userFromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
@@ -263,4 +290,7 @@ class DatabaseService {
         recordsCollection.doc(uid).collection("recordsdetails");
     return recordsdetailsCollection.snapshots().map(_recordsListFromSnapshot);
   }
+
+  //TODO! Delete
+
 }
