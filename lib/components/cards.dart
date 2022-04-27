@@ -198,22 +198,22 @@ class PersonaCard extends StatelessWidget {
   final String title;
   final String user;
   final String personaname;
-  final String personaDescription; 
+  final String personaDescription;
 
   const PersonaCard({
     Key? key,
     required this.icon,
     required this.title,
-    required this.user, 
-    required this.personaname, 
-    required this.personaDescription, 
+    required this.user,
+    required this.personaname,
+    required this.personaDescription,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        DatabaseService(user).updateUser(personaname, personaDescription);
+        DatabaseService(user).updatePersona(personaname, personaDescription);
       }, //update database details
       child: Container(
         height: 160,

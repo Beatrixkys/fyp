@@ -134,7 +134,7 @@ class _SetUpProfileAndAccountsScreenState
                                             amountController.value.text);
 
                                         await DatabaseService(uid)
-                                            .updateAccount(name, amount);
+                                            .saveAccount(name, amount);
 
                                         nameController.clear();
                                         amountController.clear();
@@ -174,7 +174,7 @@ class _SetUpProfileAndAccountsScreenState
                                       int.parse(amountController.value.text);
 
                                   await DatabaseService(uid)
-                                      .updateAccount(name, amount);
+                                      .saveAccount(name, amount);
                                 }
 
                                 Navigator.pushNamed(context, '/home');

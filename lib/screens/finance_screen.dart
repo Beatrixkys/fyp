@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp/components/buttons.dart';
@@ -7,7 +8,12 @@ import 'package:fyp/components/progress_bar.dart';
 import 'package:fyp/components/round_text.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/models/finance.dart';
+import 'package:fyp/services/database.dart';
+import 'package:fyp/services/dtblists/acclist.dart';
+import 'package:fyp/services/dtblists/reclist.dart';
 import 'package:fyp/services/menu.dart';
+import 'package:provider/provider.dart';
 
 class FinanceScreen extends StatefulWidget {
   const FinanceScreen({Key? key}) : super(key: key);
@@ -187,6 +193,7 @@ class ManageFinanceScreen extends StatefulWidget {
 }
 
 class _ManageFinanceScreenState extends State<ManageFinanceScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool accounts = true;
 
   void toggleView() {
@@ -197,109 +204,105 @@ class _ManageFinanceScreenState extends State<ManageFinanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
     double width = MediaQuery.of(context).size.width;
-
-    List<double> accountsTotal = [1500, 40, 50];
-    List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
 
     //final _formKey = GlobalKey<FormState>();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            MyHeader(
-              height: 150,
-              width: width,
-              color: kCream,
-              child: Column(
-                children: [
-                  const MyBackButton(),
-                  smallSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Manage Finances',
-                        style: kHeadingTextStyle,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 40,
-                        width: 120,
-                        child: Text(
-                          "Change View:",
-                          style: kSubTextStyle,
+    //TODO! Change to multiprovider to allow toggle option or build a new widget
+
+    return MultiProvider(
+      providers: [
+        StreamProvider<List<AccountsData>>.value(
+            value: DatabaseService(uid).accounts, initialData: const []),
+        StreamProvider<List<RecordsData>>.value(
+            value: DatabaseService(uid).records, initialData: const [])
+      ],
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              MyHeader(
+                height: 150,
+                width: width,
+                color: kCream,
+                child: Column(
+                  children: [
+                    const MyBackButton(),
+                    smallSpace,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Manage Finances',
+                          style: kHeadingTextStyle,
                         ),
-                      ),
-                      Container(
-                        height: 40,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: kApricot,
-                          borderRadius: BorderRadius.circular(30),
+                      ],
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(
+                          height: 40,
+                          width: 120,
+                          child: Text(
+                            "Change View:",
+                            style: kSubTextStyle,
+                          ),
                         ),
-                        child: TextButton(
-                          onPressed: () => toggleView(),
-                          child: Center(
-                            child: Text(
-                              accounts ? "Accounts" : "Records ",
-                              style: kButtonTextStyle,
+                        Container(
+                          height: 40,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: kApricot,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: TextButton(
+                            onPressed: () => toggleView(),
+                            child: Center(
+                              child: Text(
+                                accounts ? "Accounts" : "Records ",
+                                style: kButtonTextStyle,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  space,
-                  //add minus transaction bar
-                ],
+                      ],
+                    ),
+                    space,
+                    //add minus transaction bar
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-                child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text('Existing Data', style: kHeadingTextStyle),
-                      Spacer(),
-                      SmallButton(
-                          title: 'Add', route: '/addfinance', color: kApricot)
-                    ],
-                  ),
-                  space,
-                  RoundFunctionText(
-                    title: accountsTitle[0],
-                    subtitle: 'RM ${accountsTotal[0]}',
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                  RoundFunctionText(
-                    title: accountsTitle[1],
-                    subtitle: 'RM${accountsTotal[1]}',
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                  RoundFunctionText(
-                    title: accountsTitle[2],
-                    subtitle: 'RM${accountsTotal[2]}',
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                ],
-              ),
-            )),
-          ],
+              Expanded(
+                  child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Text('Existing Data', style: kHeadingTextStyle),
+                        Spacer(),
+                        SmallButton(
+                            title: 'Add', route: '/addfinance', color: kApricot)
+                      ],
+                    ),
+                    space,
+                    SizedBox(
+                        height: 400,
+                        child: accounts
+                            ? const AccountList()
+                            : const RecordList()),
+                  ],
+                ),
+              )),
+            ],
+          ),
         ),
       ),
     );
@@ -315,16 +318,23 @@ class AddFinanceScreen extends StatefulWidget {
 
 class _AddFinanceScreenState extends State<AddFinanceScreen> {
   //Form
-  String dropdownvalue = 'Bank';
-  String dropdownrecvalue = 'Leisure';
+  String dropdownaccvalue = 'Bank';
+  String dropdownreccatvalue = 'Leisure';
   String dropdownrectypevalue = 'Income';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final amountController = TextEditingController();
 
-//condition for toggle view
-//TODO!: create toggle button for add screen as well 
-  bool records = true;
+//Condition for toggle key
+  bool accountState = true;
+
+  void toggleView() {
+    setState(() {
+      accountState = !accountState;
+    });
+  }
+
   final nameVal =
       MultiValidator([RequiredValidator(errorText: 'Field is Required')]);
 
@@ -337,6 +347,8 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
     //visuals
     double width = MediaQuery.of(context).size.width;
 
@@ -363,21 +375,49 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                   children: [
                     const MyBackButton(),
                     smallSpace,
-                    const Text(
-                      'Add Finances',
-                      style: kHeadingTextStyle,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'Add',
+                          style: kHeadingTextStyle,
+                        ),
+                        Column(
+                          children: [
+                            const Text('Switch:'),
+                            Container(
+                              height: 40,
+                              width: 120,
+                              decoration: BoxDecoration(
+                                color: kApricot,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: TextButton(
+                                onPressed: () => toggleView(),
+                                child: Center(
+                                  child: Text(
+                                    accountState ? "Accounts" : " Records ",
+                                    style: kButtonTextStyle,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const Spacer(),
                     RoundTextField(
                         controller: nameController,
-                        title: "Title",
+                        title: "Name",
                         isPassword: false,
                         onSaved: (String? value) {
                           name != value;
                         },
                         validator: nameVal),
                     const Spacer(),
-                    if (records)
+                    if (!accountState)
                       SizedBox(
                         width: 300,
                         child: Column(
@@ -424,7 +464,7 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                         },
                         validator: nameVal),
                     space,
-                    if (records)
+                    if (!accountState)
                       SizedBox(
                         width: 300,
                         child: Column(
@@ -434,12 +474,12 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                               style: kSubTextStyle,
                             ),
                             DropdownButtonFormField(
-                              value: dropdownvalue,
+                              value: dropdownaccvalue,
                               icon: const Icon(
                                   Icons.keyboard_arrow_down_outlined),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  dropdownvalue = newValue!;
+                                  dropdownaccvalue = newValue!;
                                 });
                               },
                               items: accounts.map<DropdownMenuItem<String>>(
@@ -456,12 +496,12 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                               style: kSubTextStyle,
                             ),
                             DropdownButtonFormField(
-                              value: dropdownrecvalue,
+                              value: dropdownreccatvalue,
                               icon: const Icon(
                                   Icons.keyboard_arrow_down_outlined),
                               onChanged: (String? newValue) {
                                 setState(() {
-                                  dropdownrecvalue = newValue!;
+                                  dropdownreccatvalue = newValue!;
                                 });
                               },
                               items: record.map<DropdownMenuItem<String>>(
@@ -479,8 +519,23 @@ class _AddFinanceScreenState extends State<AddFinanceScreen> {
                     SizedBox(
                       width: 300,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/home');
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            //setState(() => loading = true);
+                            var name = nameController.value.text;
+                            int amount = int.parse(amountController.value.text);
+                            var recordtype = dropdownrectypevalue;
+                            var accname = dropdownaccvalue;
+                            var recordcategory = dropdownreccatvalue;
+
+                            accountState
+                                ? await DatabaseService(uid)
+                                    .saveAccount(name, amount)
+                                : DatabaseService(uid).saveRecord(name, amount,
+                                    recordtype, recordcategory, accname);
+                          }
+
+                          Navigator.pushNamed(context, '/finance');
                         },
                         child: const Text(
                           'Save',

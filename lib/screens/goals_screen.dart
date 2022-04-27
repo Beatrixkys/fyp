@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp/components/buttons.dart';
@@ -7,7 +9,12 @@ import 'package:fyp/components/progress_bar.dart';
 import 'package:fyp/components/round_text.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/models/goals.dart';
+import 'package:fyp/services/database.dart';
+import 'package:fyp/services/dtblists/goallist.dart';
 import 'package:fyp/services/menu.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class GoalsScreen extends StatelessWidget {
   const GoalsScreen({Key? key}) : super(key: key);
@@ -96,89 +103,77 @@ class GoalsScreen extends StatelessWidget {
 }
 
 class ManageGoalsScreen extends StatelessWidget {
-  const ManageGoalsScreen({Key? key}) : super(key: key);
+  ManageGoalsScreen({Key? key}) : super(key: key);
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
     double width = MediaQuery.of(context).size.width;
-
-    List<String> goalsTarget = ['50% income', "20% expense", "10% savings"];
-    List<String> goalsTitle = ['Save', 'Reduce', 'Invest'];
 
     //final _formKey = GlobalKey<FormState>();
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            MyHeader(
-              height: 150,
-              width: width,
-              color: kCream,
-              child: Column(
-                children: [
-                  const MyBackButton(),
-                  smallSpace,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      Text(
-                        'Manage Goals',
-                        style: kHeadingTextStyle,
-                      ),
-                    ],
-                  ),
-                  const Spacer(),
+    return StreamProvider<List<GoalsData>>.value(
+      initialData: const [],
+      value: DatabaseService(uid).goals,
+      child: Scaffold(
+        body: SafeArea(
+          child: Column(
+            children: [
+              MyHeader(
+                height: 150,
+                width: width,
+                color: kCream,
+                child: Column(
+                  children: [
+                    const MyBackButton(),
+                    smallSpace,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Manage Goals',
+                          style: kHeadingTextStyle,
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
 
-                  space,
-                  //add minus transaction bar
-                ],
+                    space,
+                    //add minus transaction bar
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-                child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text('Existing Goals', style: kHeadingTextStyle),
-                      Spacer(),
-                      SmallButton(
-                          title: 'Add', route: '/addgoals', color: kApricot)
-                    ],
-                  ),
-                  space,
-                  RoundFunctionText(
-                    title: goalsTitle[0],
-                    subtitle: goalsTarget[0],
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                  RoundFunctionText(
-                    title: goalsTitle[1],
-                    subtitle: goalsTarget[1],
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                  RoundFunctionText(
-                    title: goalsTitle[2],
-                    subtitle: goalsTarget[2],
-                    icon1: const Icon(Icons.edit_outlined),
-                    icon2: const Icon(Icons.delete_outlined),
-                  ),
-                ],
-              ),
-            )),
-          ],
+              Expanded(
+                  child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Text('Existing Goals', style: kHeadingTextStyle),
+                        Spacer(),
+                        SmallButton(
+                            title: 'Add', route: '/addgoals', color: kApricot)
+                      ],
+                    ),
+                    space,
+                    const SizedBox(height: 200, child: GoalList()),
+                  ],
+                ),
+              )),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+//!TODO ADD GOALS SCREEN EDIT
 class AddGoalsScreen extends StatefulWidget {
   const AddGoalsScreen({Key? key}) : super(key: key);
 
@@ -187,34 +182,46 @@ class AddGoalsScreen extends StatefulWidget {
 }
 
 class _AddGoalsScreenState extends State<AddGoalsScreen> {
-  String dropdownmeasurevalue = 'Amount';
-  String dropdownvalue = 'Day';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String dropdowntitlevalue = 'Save';
+  String dropdowntargetvalue = 'Income';
 //Form
   final _formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
   final amountController = TextEditingController();
 
   final nameVal =
       MultiValidator([RequiredValidator(errorText: 'Field is Required')]);
+
+  final amountVal = MultiValidator([
+    RequiredValidator(errorText: 'Field is Required'),
+    RangeValidator(
+        min: 0, max: 100, errorText: 'Percentage must be in range 0-100')
+  ]);
+
+  DateTime? _dateTime;
+
   @override
   void dispose() {
-    nameController.dispose();
     amountController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    //final uid = user!.uid;
+
     //visuals
     double width = MediaQuery.of(context).size.width;
 
     //initialised within the state
-    String name = "";
-    String amount = "";
+
+    String amount = "0";
 
     //mock database
-    List<String> goalMeasureType = ['Amount', 'Percentage'];
-    List<String> timing = ['Day', 'Month', 'Year'];
+    List<String> goalTitle = ['Save', 'Reduce'];
+    List<String> goalTarget = ['Income', 'Expense'];
 
     return Scaffold(
       body: SafeArea(
@@ -238,107 +245,136 @@ class _AddGoalsScreenState extends State<AddGoalsScreen> {
                 ),
               ),
               Expanded(
-                  child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    space,
-                    RoundTextField(
-                      controller: nameController,
-                      title: "Goal Name",
-                      isPassword: false,
-                      onSaved: (String? value) {
-                        name != value;
-                      },
-                      validator: nameVal,
-                    ),
-                    space,
-                    const Text(
-                      'Goal Measure Type',
-                      style: kSubTextStyle,
-                    ),
+                  child: SizedBox(
+                width: 300,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      space,
+                      const Text(
+                        'Goal Title',
+                        style: kSubTextStyle,
+                      ),
+                      space,
 
-                    DropdownButton(
-                      value: dropdownmeasurevalue.isNotEmpty
-                          ? dropdownmeasurevalue
-                          : null,
-                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownmeasurevalue = newValue!;
-                        });
-                      },
-                      items: goalMeasureType
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem(
-                          child: Text(value),
-                          value: value,
-                        );
-                      }).toList(),
-                    ),
+                      DropdownButtonFormField(
+                        value: dropdowntitlevalue,
+                        icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdowntitlevalue = newValue!;
+                          });
+                        },
+                        items: goalTitle
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            child: Text(value),
+                            value: value,
+                          );
+                        }).toList(),
+                      ),
 
-                    //Goal Amount or Percemt
-                    RoundDoubleTextField(
-                      controller: amountController,
-                      title: "Goal Amount",
-                      onSaved: (String? value) {
-                        amount != value;
-                      },
-                      validator: nameVal,
-                    ),
-                    space,
+                      space,
+                      const Text(
+                        'Goal Target',
+                        style: kSubTextStyle,
+                      ),
 
-                    //TIME
-                    const Text(
-                      'Time Measure Type ',
-                      style: kSubTextStyle,
-                    ),
+                      DropdownButtonFormField(
+                        value: dropdowntargetvalue,
+                        icon: const Icon(Icons.keyboard_arrow_down_outlined),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdowntargetvalue = newValue!;
+                          });
+                        },
+                        items: goalTarget
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem(
+                            child: Text(value),
+                            value: value,
+                          );
+                        }).toList(),
+                      ),
 
-                    DropdownButton(
-                      value: dropdownvalue.isNotEmpty ? dropdownvalue : null,
-                      icon: const Icon(Icons.keyboard_arrow_down_outlined),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownvalue = newValue!;
-                        });
-                      },
-                      items:
-                          timing.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem(
-                          child: Text(value),
-                          value: value,
-                        );
-                      }).toList(),
-                    ),
+                      space,
 
-                    //Time Amount
-                    RoundDoubleTextField(
+                      //Goal Amount
+                      RoundDoubleTextField(
                         controller: amountController,
-                        title: "Goal Time Period",
+                        title: "Goal Percentage",
                         onSaved: (String? value) {
                           amount != value;
                         },
-                        validator: nameVal),
-                    space,
-                    //save button
-                    SizedBox(
-                      width: 300,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            amount = amountController.value.text;
-                            name = nameController.value.text;
-                          }
-                          Navigator.pushNamed(context, '/home');
-                        },
-                        child: const Text(
-                          'Save',
-                          style: kButtonTextStyle,
-                        ),
-                        style: kButtonStyle,
+                        validator: nameVal,
                       ),
-                    ),
-                  ],
+
+                      space,
+
+                      //TIME
+                      const Text(
+                        'Choose End Date ',
+                        style: kSubTextStyle,
+                      ),
+
+                      TextButton.icon(
+                        onPressed: () async {
+                          DateTime? _newDate = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              initialDate: DateTime.now(),
+                              lastDate: DateTime(2222));
+
+                          if (_newDate == null) return;
+
+                          setState(() => _dateTime = _newDate);
+                        },
+                        icon: const Icon(Icons.calendar_today),
+                        label: Text(_dateTime == null
+                            ? 'Choose A Date'
+                            : DateFormat('dd/MM/yyyy')
+                                .format(_dateTime!)
+                                .toString()),
+                      ),
+
+                      space,
+
+                      Text(_dateTime == null
+                          ? 'No date chosen'
+                          : DateFormat('dd/MM/yyyy')
+                              .format(_dateTime!)
+                              .toString()),
+
+                      //save button
+                      SizedBox(
+                        width: 300,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              int amount =
+                                  int.parse(amountController.value.text);
+
+                              var target = dropdowntargetvalue;
+                              var title = dropdowntitlevalue;
+                              Timestamp enddate =
+                                  Timestamp.fromDate(_dateTime!);
+                              int progress = 0;
+
+                              DatabaseService(user!.uid).saveGoal(
+                                  amount, target, title, enddate, progress);
+                            }
+                            Navigator.pushNamed(context, '/goals');
+                          },
+                          child: const Text(
+                            'Save',
+                            style: kButtonTextStyle,
+                          ),
+                          style: kButtonStyle,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               )),
             ],

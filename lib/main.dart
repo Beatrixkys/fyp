@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           '/goals': (context) => const GoalsScreen(),
           '/managefinance': (context) => const ManageFinanceScreen(),
           '/addfinance': (context) => const AddFinanceScreen(),
-          '/managegoals': (context) => const ManageGoalsScreen(),
+          '/managegoals': (context) => ManageGoalsScreen(),
           '/addgoals': (context) => const AddGoalsScreen(),
         },
       ),

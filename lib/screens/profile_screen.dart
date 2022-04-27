@@ -20,9 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final FirebaseAuth _authUser = FirebaseAuth.instance;
 
-//TODO!
-//1. Create a ListTile for User
-//2. Create a ListBuilder for User (do in the same file)
+
 
   final AuthService _auth = AuthService();
 //push data into firebase here
