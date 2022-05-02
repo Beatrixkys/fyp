@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fyp/models/finance.dart';
+import 'package:fyp/models/friends.dart';
 import 'package:fyp/models/goals.dart';
 import 'package:fyp/models/persona.dart';
 import 'package:fyp/models/user.dart';
@@ -26,6 +27,9 @@ class DatabaseService {
 
   final CollectionReference<Map<String, dynamic>> recordsCollection =
       FirebaseFirestore.instance.collection("records");
+
+  final CollectionReference<Map<String, dynamic>> friendsCollection =
+      FirebaseFirestore.instance.collection("friends");
 
   //USER
   //create a user
@@ -62,12 +66,12 @@ class DatabaseService {
         .set({'name': name, 'amount': amount});
   }
 
-  Future<void> updateAccount(String name, int amount) async {
+  Future<void> updateAccount(String name, int amount, String aid) async {
     //doc will create a new uid of Database service
     return await accountsCollection
         .doc(uid)
         .collection('accountsdetails')
-        .doc()
+        .doc(aid)
         .set({'name': name, 'amount': amount});
   }
 
@@ -95,7 +99,7 @@ class DatabaseService {
   }
 
   Future<void> updateGoal(
-    String name,
+    String docid,
     int amount,
     String target,
     String title,
@@ -105,16 +109,14 @@ class DatabaseService {
     return await goalsCollection
         .doc(uid)
         .collection('goalsdetails')
-        .doc()
+        .doc(docid)
         .update({
-      'name': name,
+      'title': title,
       'amount': amount,
       'target': target,
-      'title': title,
       'enddate': enddate
     });
   }
-
 
   Future<void> deleteGoal(String docid) async {
     //doc will create a new uid of Database service
@@ -124,7 +126,6 @@ class DatabaseService {
         .doc(docid)
         .delete();
   }
-
 
   //RECORD
 //add a new goal
@@ -145,12 +146,12 @@ class DatabaseService {
   }
 
   Future<void> updateRecord(String name, int amount, String recordtype,
-      String recordcategory, String accname) async {
+      String recordcategory, String accname, String rid) async {
     //doc will create a new uid of Database service
     return await recordsCollection
         .doc(uid)
         .collection('recordsdetails')
-        .doc()
+        .doc(rid)
         .update({
       'name': name,
       'amount': amount,
@@ -160,7 +161,7 @@ class DatabaseService {
     });
   }
 
-   Future<void> deleteRecord(String docid) async {
+  Future<void> deleteRecord(String docid) async {
     //doc will create a new uid of Database service
     return await recordsCollection
         .doc(uid)
@@ -169,10 +170,28 @@ class DatabaseService {
         .delete();
   }
 
+  Future<void> saveFriend(
+      String name, String email, int progress, String docid) async {
+    //doc will create a new uid of Database service
+    return await friendsCollection
+        .doc(uid)
+        .collection('friendsdetails')
+        .doc(docid)
+        .set({'name': name, 'email': email, 'progress': progress});
+  }
+
+  Future<void> deleteFriendRequest(String docid) async {
+    //doc will create a new uid of Database service
+    return await friendsCollection
+        .doc(uid)
+        .collection('friendrequestdetails')
+        .doc(docid)
+        .delete();
+  }
+
 //READ
 
 //TODO!Convert to use this function instead of Stream Builder
-
 
   MyUserData _userFromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
@@ -291,6 +310,48 @@ class DatabaseService {
     return recordsdetailsCollection.snapshots().map(_recordsListFromSnapshot);
   }
 
-  //TODO! Delete
+  //READ RECORDS
 
+  List<FriendsData> _friendsListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return FriendsData(
+        fid: doc.id,
+        fname: (doc.data() as dynamic)['name'] ?? '',
+        femail: (doc.data() as dynamic)['email'] ?? '',
+        fprogress: (doc.data() as dynamic)['progress'] ?? 0,
+      );
+    }).toList();
+  }
+
+  Stream<List<FriendsData>> get friends {
+    final CollectionReference<Map<String, dynamic>> friendsdetailsCollection =
+        friendsCollection.doc(uid).collection("friendsdetails");
+    return friendsdetailsCollection.snapshots().map(_friendsListFromSnapshot);
+  }
+
+  List<FriendRequestData> _friendsrequestListFromSnapshot(
+      QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return FriendRequestData(
+        fid: doc.id,
+        fname: (doc.data() as dynamic)['name'] ?? '',
+        femail: (doc.data() as dynamic)['email'] ?? '',
+        fprogress: (doc.data() as dynamic)['progress'] ?? 0,
+      );
+    }).toList();
+  }
+
+  Stream<List<FriendRequestData>> get friendreqs {
+    final CollectionReference<Map<String, dynamic>> friendsdetailsCollection =
+        friendsCollection.doc(uid).collection("friendrequestdetails");
+    return friendsdetailsCollection
+        .snapshots()
+        .map(_friendsrequestListFromSnapshot);
+  }
+
+
+  
+
+
+  
 }

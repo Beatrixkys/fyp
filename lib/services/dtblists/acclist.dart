@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/models/finance.dart';
 import 'package:fyp/services/database.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +41,24 @@ class AccountsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void _showSettingsPanel() {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Container(
+              height: 500,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
+              child: AccountSettingsForm(
+                uid: uid,
+                aid: account.accountid,
+                aname: account.name,
+                aamount: account.amount,
+              ),
+            );
+          });
+    }
+
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: Card(
@@ -53,15 +73,13 @@ class AccountsTile extends StatelessWidget {
             style: kTitleTextstyle,
           ),
           subtitle: Text('RM ${account.amount}'),
-
-          //TODO!: Add a popout to choose delete or edit options
           trailing: SizedBox(
             width: 96,
             child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit_outlined),
-                  onPressed: () {},
+                  onPressed: () => _showSettingsPanel(),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outlined),
@@ -73,6 +91,98 @@ class AccountsTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class AccountSettingsForm extends StatefulWidget {
+  const AccountSettingsForm(
+      {Key? key,
+      required this.uid,
+      required this.aid,
+      required this.aname,
+      required this.aamount})
+      : super(key: key);
+
+  final String uid;
+  final String aid;
+  final String aname;
+  final int aamount;
+
+  @override
+  State<AccountSettingsForm> createState() => _AccountSettingsFormState();
+}
+
+class _AccountSettingsFormState extends State<AccountSettingsForm> {
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final amountController = TextEditingController();
+
+  final nameVal =
+      MultiValidator([RequiredValidator(errorText: 'Field is Required')]);
+
+  @override
+  Widget build(BuildContext context) {
+    String name = widget.aname;
+    String amount = widget.aamount.toString();
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: [
+          const Text(
+            'Edit Account',
+            style: kHeadingTextStyle,
+          ),
+          space,
+          const Text(
+            'Account Name',
+            style: kSubTextStyle,
+          ),
+          RoundTextField(
+              controller: nameController,
+              title: name,
+              isPassword: false,
+              onSaved: (String? value) {
+                name != value;
+              },
+              validator: nameVal),
+          space,
+          const Text(
+            'Account Amount ',
+            style: kSubTextStyle,
+          ),
+          RoundDoubleTextField(
+              controller: amountController,
+              title: amount,
+              onSaved: (String? value) {
+                amount != value;
+              },
+              validator: nameVal),
+          space,
+          SizedBox(
+            width: 300,
+            child: ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  //setState(() => loading = true);
+                  var name = nameController.value.text;
+                  int amount = int.parse(amountController.value.text);
+
+                  await DatabaseService(widget.uid)
+                      .updateAccount(name, amount, widget.aid);
+                }
+
+                Navigator.pushNamed(context, '/finance');
+              },
+              child: const Text(
+                'Save',
+                style: kButtonTextStyle,
+              ),
+              style: kButtonStyle,
+            ),
+          ),
+        ],
       ),
     );
   }

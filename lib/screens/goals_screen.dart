@@ -114,6 +114,8 @@ class ManageGoalsScreen extends StatelessWidget {
 
     //final _formKey = GlobalKey<FormState>();
 
+   
+
     return StreamProvider<List<GoalsData>>.value(
       initialData: const [],
       value: DatabaseService(uid).goals,
