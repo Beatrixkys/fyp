@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/models/finance.dart';
 import 'package:fyp/models/goals.dart';
 import 'package:fyp/services/database.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -49,15 +50,13 @@ class FinancialCard extends StatelessWidget {
 }
 
 class AccountsCard extends StatelessWidget {
-  final String icon;
-  final String title;
-  final String text;
+  final AccountsData account;
+  final String uid;
 
   const AccountsCard({
     Key? key,
-    required this.icon,
-    required this.title,
-    required this.text,
+    required this.account,
+    required this.uid,
   }) : super(key: key);
 
   @override
@@ -72,13 +71,13 @@ class AccountsCard extends StatelessWidget {
       ),
       child: Column(
         children: <Widget>[
-          Image.asset(icon, height: 90),
+          Image.asset("assets/bank.png", height: 90),
           Text(
-            title,
+            account.name,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           Text(
-            text,
+            ('RM ${account.amount}'),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],

@@ -64,7 +64,7 @@ class AuthenticationWrapper extends StatelessWidget {
     if (user == null) {
       return const AuthScreen();
     } else {
-      return const BioAuthScreen();
+      return const HomeScreen();
     }
   }
 }

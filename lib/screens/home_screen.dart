@@ -6,6 +6,7 @@ import 'package:fyp/components/progress_bar.dart';
 import 'package:fyp/components/round_text.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/models/goals.dart';
+import 'package:fyp/models/user.dart';
 import 'package:fyp/services/database.dart';
 import 'package:fyp/services/dtblists/goallist.dart';
 import 'package:fyp/services/menu.dart';
@@ -20,6 +21,8 @@ class HomeScreen extends StatelessWidget {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
     final uid = user!.uid;
+    MyUserData? userData;
+    Stream<MyUserData?> myUserData = DatabaseService(uid).user;
 
     //visuals
     double width = MediaQuery.of(context).size.width;
@@ -117,9 +120,21 @@ class HomeScreen extends StatelessWidget {
 
                         smallSpace,
 
-                        ProgressBar(
-                            percent: overallProgress,
-                            progress: '${(overallProgress * 100).round()}%'),
+                        StreamBuilder<MyUserData?>(
+                          stream: myUserData,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              userData = snapshot.data;
+                              var value = userData!.progress;
+                              return ProgressBar(
+                                percent: value / 100.toDouble(),
+                                progress: '$value%',
+                              );
+                            }
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          },
+                        ),
                         smallSpace,
                         SizedBox(
                           width: 350,

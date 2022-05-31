@@ -49,153 +49,133 @@ class _FinanceScreenState extends State<FinanceScreen> {
     //double total = 1000;
     //double incomeTotal = 100;
     //double expenseTotal = 50;
-    List<double> accountsTotal = [1500, 40, 50];
-    List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
+    //List<double> accountsTotal = [1500, 40, 50];
+    //List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
     //goal
     double overallProgress = 0.5;
-    return Scaffold(
-      drawer: const NavDrawer(),
-      appBar: AppBar(
-        backgroundColor: kApricot,
-        elevation: 0.0,
-      ),
-      body: SingleChildScrollView(
-        controller: controller,
-        child: Column(
-          children: [
-            MyHeader(
-              height: 120,
-              width: width,
-              color: kApricot,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Row(
-                    children: [
-                      const Text(
-                        'Finances',
-                        textAlign: TextAlign.start,
-                        style: kHeadingTextStyle,
-                      ),
-                      const Spacer(),
-                      Container(
-                        height: 40.0,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: kCream,
-                          borderRadius: BorderRadius.circular(30),
+    return MultiProvider(
+      providers: [
+        StreamProvider<List<AccountsData>>.value(
+            value: DatabaseService(uid).accounts, initialData: const []),
+        StreamProvider<List<RecordsData>>.value(
+            value: DatabaseService(uid).records, initialData: const [])
+      ],
+      child: Scaffold(
+        drawer: const NavDrawer(),
+        appBar: AppBar(
+          backgroundColor: kApricot,
+          elevation: 0.0,
+        ),
+        body: SingleChildScrollView(
+          controller: controller,
+          child: Column(
+            children: [
+              MyHeader(
+                height: 120,
+                width: width,
+                color: kApricot,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        const Text(
+                          'Finances',
+                          textAlign: TextAlign.start,
+                          style: kHeadingTextStyle,
                         ),
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/managefinance');
-                          },
-                          child: const Center(
-                            child: Text(
-                              'Manage',
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16),
+                        const Spacer(),
+                        Container(
+                          height: 40.0,
+                          width: 120,
+                          decoration: BoxDecoration(
+                            color: kCream,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/managefinance');
+                            },
+                            child: const Center(
+                              child: Text(
+                                'Manage',
+                                style: TextStyle(
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16),
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                    Text(
+                      'Total Assets: RM $total',
+                      textAlign: TextAlign.start,
+                      style: kSubTextStyle,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  children: [
+                    space,
+                    const TitleCard(
+                      title: "Overview of the Month",
+                      route: "/goals",
+                      button: "See More",
+                    ),
+
+                    smallSpace,
+
+                    ProgressBar(
+                        percent: overallProgress,
+                        progress: '${(overallProgress * 100).round()}%'),
+                    smallSpace,
+                    SizedBox(
+                      width: 350,
+                      child: Row(
+                        children: [
+                          ExpenditureCard(
+                              title: "Income", amount: '$incomeTotal'),
+                          ExpenditureCard(
+                              title: "Expense", amount: '$expenseTotal'),
+                          space,
+                        ],
                       ),
-                    ],
-                  ),
-                  Text(
-                    'Total Assets: RM $total',
-                    textAlign: TextAlign.start,
-                    style: kSubTextStyle,
-                  ),
-                ],
+                    ),
+                    space,
+
+                    const TitleCard(
+                        title: "Accounts",
+                        route: "/managefinance",
+                        button: "Manage"),
+
+                    space,
+                    const SizedBox(
+                      width: 350,
+                      height: 160,
+                      child: AccountCardList(),
+                    ),
+                    //create scrollable accounts
+                    space,
+                    const TitleCard(
+                        title: "Transactions",
+                        route: "/managefinance",
+                        button: "Manage"),
+                    space,
+                    const SizedBox(
+                      width: 400,
+                      height: 300,
+                      child: RecordList(),
+                    )
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Column(
-                children: [
-                  space,
-                  const TitleCard(
-                    title: "Overview of the Month",
-                    route: "/goals",
-                    button: "See More",
-                  ),
-
-                  smallSpace,
-
-                  ProgressBar(
-                      percent: overallProgress,
-                      progress: '${(overallProgress * 100).round()}%'),
-                  smallSpace,
-                  SizedBox(
-                    width: 350,
-                    child: Row(
-                      children: [
-                        ExpenditureCard(
-                            title: "Income", amount: '$incomeTotal'),
-                        ExpenditureCard(
-                            title: "Expense", amount: '$expenseTotal'),
-                        space,
-                      ],
-                    ),
-                  ),
-                  space,
-
-                  const TitleCard(
-                      title: "Accounts",
-                      route: "/managefinance",
-                      button: "Manage"),
-
-                  space,
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AccountsCard(
-                            icon: "assets/bank.png",
-                            title: accountsTitle[0],
-                            text: "RM ${accountsTotal[0]}"),
-                        AccountsCard(
-                            icon: "assets/cash.png",
-                            title: accountsTitle[1],
-                            text: "RM${accountsTotal[1]}"),
-                        AccountsCard(
-                            icon: "assets/ewallet.png",
-                            title: accountsTitle[2],
-                            text: "RM${accountsTotal[2]}"),
-                      ],
-                    ),
-                  ),
-                  //create scrollable accounts
-                  space,
-                  const TitleCard(
-                      title: "Transaction",
-                      route: "/managefinance",
-                      button: "Manage"),
-                  space,
-                  Center(
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {},
-                          child: const Icon(Icons.arrow_left),
-                        ),
-                        const Text(
-                          "14-5-2000",
-                          style: kTitleTextstyle,
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: const Icon(Icons.arrow_right),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

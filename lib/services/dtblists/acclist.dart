@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/models/finance.dart';
 import 'package:fyp/services/database.dart';
@@ -184,6 +185,31 @@ class _AccountSettingsFormState extends State<AccountSettingsForm> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class AccountCardList extends StatefulWidget {
+  const AccountCardList({Key? key}) : super(key: key);
+
+  @override
+  State<AccountCardList> createState() => _AccountCardListState();
+}
+
+class _AccountCardListState extends State<AccountCardList> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    final accounts = Provider.of<List<AccountsData>>(context);
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: accounts.length,
+      itemBuilder: (context, index) {
+        return AccountsCard(account: accounts[index], uid: uid);
+      },
     );
   }
 }
