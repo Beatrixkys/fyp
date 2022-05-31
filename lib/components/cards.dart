@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp/constant.dart';
+import 'package:fyp/models/goals.dart';
 import 'package:fyp/services/database.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -132,15 +133,13 @@ class ExpenditureCard extends StatelessWidget {
 //Goals
 
 class GoalCard extends StatelessWidget {
-  final double percent; //use persona image
-  final String title;
-  final String text;
+  final GoalsData goal;
+  final String uid;
 
   const GoalCard({
     Key? key,
-    required this.percent,
-    required this.title,
-    required this.text,
+    required this.goal,
+    required this.uid,
   }) : super(key: key);
 
   @override
@@ -167,24 +166,24 @@ class GoalCard extends StatelessWidget {
               child: CircularPercentIndicator(
                 animation: true,
                 radius: 65.0,
-                percent: percent,
+                percent: (goal.progress / 100).toDouble(),
                 lineWidth: 10.0,
                 circularStrokeCap: CircularStrokeCap.round,
                 backgroundColor: Colors.white10,
                 progressColor: Colors.white,
                 center: Text(
-                  '${(percent * 100).round()}%',
+                  '${goal.progress}%',
                   style: const TextStyle(
                       fontWeight: FontWeight.w700, color: Colors.white),
                 ),
               ),
             ),
             Text(
-              title,
+              goal.title,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              text,
+              '${goal.progress}% of ${goal.target}',
             ),
           ],
         ),

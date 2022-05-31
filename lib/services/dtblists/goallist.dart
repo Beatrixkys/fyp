@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/models/goals.dart';
@@ -277,6 +278,31 @@ class _GoalSettingsFormState extends State<GoalSettingsForm> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class GoalCardList extends StatefulWidget {
+  const GoalCardList({Key? key}) : super(key: key);
+
+  @override
+  State<GoalCardList> createState() => _GoalCardListState();
+}
+
+class _GoalCardListState extends State<GoalCardList> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    final goals = Provider.of<List<GoalsData>>(context);
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: goals.length,
+      itemBuilder: (context, index) {
+        return GoalCard(goal: goals[index], uid: uid);
+      },
     );
   }
 }

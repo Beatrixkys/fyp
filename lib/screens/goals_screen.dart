@@ -36,90 +36,81 @@ class GoalsScreen extends StatelessWidget {
     double percent = 0.75;
     final controller = ScrollController();
 
-    return Scaffold(
-      drawer: const NavDrawer(),
-      appBar: AppBar(
-        backgroundColor: kApricot,
-        elevation: 0.0,
-      ),
-      body: SingleChildScrollView(
-        controller: controller,
-        child: Column(
-          children: [
-            MyHeader(
-              height: 120,
-              width: width,
-              color: kApricot,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: const [
-                      Text('Goals',
-                          textAlign: TextAlign.start, style: kHeadingTextStyle),
-                      Spacer(),
-                      SmallButton(
-                          title: "Manage",
-                          route: "/managegoals",
-                          color: kCream),
-                    ],
-                  ),
-                  StreamBuilder<MyUserData?>(
-                    stream: myUserData,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        userData = snapshot.data;
-                        var value = userData!.progress;
-                        return ProgressBar(
-                          percent: value / 100.toDouble(),
-                          progress: '$value%',
-                        );
-                      }
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            const TitleCard(
-                title: "Current Goals",
-                route: "/managegoals",
-                button: "Manage"),
-            space,
-
-            SizedBox(
-              width: width,
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
+    return StreamProvider<List<GoalsData>>.value(
+      initialData: const [],
+      value: DatabaseService(uid).goals,
+      child: Scaffold(
+        drawer: const NavDrawer(),
+        appBar: AppBar(
+          backgroundColor: kApricot,
+          elevation: 0.0,
+        ),
+        body: SingleChildScrollView(
+          controller: controller,
+          child: Column(
+            children: [
+              MyHeader(
+                height: 120,
+                width: width,
+                color: kApricot,
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    GoalCard(
-                        percent: percent, title: "Save", text: "50% of income"),
-                    const SizedBox(width: 5),
-                    const GoalCard(
-                        percent: 0.6, title: "Reduce", text: "20% of expense"),
-                    const SizedBox(width: 5),
-                    const GoalCard(
-                        percent: 0.3, title: "Invest", text: "10% of savings"),
+                    Row(
+                      children: const [
+                        Text('Goals',
+                            textAlign: TextAlign.start,
+                            style: kHeadingTextStyle),
+                        Spacer(),
+                        SmallButton(
+                            title: "Manage",
+                            route: "/managegoals",
+                            color: kCream),
+                      ],
+                    ),
+                    StreamBuilder<MyUserData?>(
+                      stream: myUserData,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          userData = snapshot.data;
+                          var value = userData!.progress;
+                          return ProgressBar(
+                            percent: value / 100.toDouble(),
+                            progress: '$value%',
+                          );
+                        }
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    ),
                   ],
                 ),
               ),
-            ),
 
-            space,
+              const TitleCard(
+                  title: "Current Goals",
+                  route: "/managegoals",
+                  button: "Manage"),
+              space,
 
-            const TitleCard(
-              title: "Goals Achievement",
-              route: "/home",
-              button: "See More",
-            ),
-            smallSpace,
+              SizedBox(
+                width: width,
+                height: 250,
+                child: const GoalCardList(),
+              ),
 
-            //insert graph
-          ],
+              space,
+
+              const TitleCard(
+                title: "Goals Achievement",
+                route: "/home",
+                button: "See More",
+              ),
+              smallSpace,
+
+              //insert graph
+            ],
+          ),
         ),
       ),
     );
