@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:fyp/components/buttons.dart';
-import 'package:fyp/components/cards.dart';
 import 'package:fyp/components/header.dart';
 import 'package:fyp/components/progress_bar.dart';
 import 'package:fyp/components/round_text.dart';
@@ -33,7 +32,6 @@ class GoalsScreen extends StatelessWidget {
     Stream<MyUserData?> myUserData = DatabaseService(uid).user;
 
     double width = MediaQuery.of(context).size.width;
-    double percent = 0.75;
     final controller = ScrollController();
 
     return StreamProvider<List<GoalsData>>.value(
