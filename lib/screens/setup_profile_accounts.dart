@@ -90,21 +90,21 @@ class _SetUpProfileAndAccountsScreenState
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  PersonaCard(
+                                  PersonaCardSetUp(
                                     icon: "assets/eagle.png",
                                     title: "Eagle",
                                     user: uid,
                                     personaname: "Eagle",
                                     personaDescription: "Amount Based",
                                   ), //switch cases in the page below
-                                  PersonaCard(
+                                  PersonaCardSetUp(
                                     icon: "assets/pigeon.png",
                                     title: "Pigeon",
                                     user: uid,
                                     personaname: "Pigeon",
                                     personaDescription: "Percentage Based",
                                   ),
-                                  PersonaCard(
+                                  PersonaCardSetUp(
                                     icon: "assets/owl.png",
                                     title: "Owl",
                                     user: uid,

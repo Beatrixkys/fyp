@@ -12,6 +12,7 @@ import 'package:fyp/models/finance.dart';
 import 'package:fyp/services/database.dart';
 import 'package:fyp/services/dtblists/acclist.dart';
 import 'package:fyp/services/dtblists/reclist.dart';
+import 'package:fyp/services/logic.dart';
 import 'package:fyp/services/menu.dart';
 import 'package:provider/provider.dart';
 
@@ -23,15 +24,31 @@ class FinanceScreen extends StatefulWidget {
 }
 
 class _FinanceScreenState extends State<FinanceScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     //visuals
     final controller = ScrollController();
     double width = MediaQuery.of(context).size.width;
+
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
     //finances
-    double total = 1000;
-    double incomeTotal = 100;
-    double expenseTotal = 50;
+
+    int total = 0;
+
+    Future<void> totalAsset() async {
+      total = await LogicService(uid).totalAsset();
+    }
+
+    totalAsset();
+
+    var incomeTotal = LogicService(uid).totalIncome();
+    var expenseTotal = LogicService(uid).totalExpense();
+
+    //double total = 1000;
+    //double incomeTotal = 100;
+    //double expenseTotal = 50;
     List<double> accountsTotal = [1500, 40, 50];
     List<String> accountsTitle = ['Bank', 'Cash', 'E-Wallet'];
     //goal
@@ -209,8 +226,6 @@ class _ManageFinanceScreenState extends State<ManageFinanceScreen> {
     double width = MediaQuery.of(context).size.width;
 
     //final _formKey = GlobalKey<FormState>();
-
-    //TODO! Change to multiprovider to allow toggle option or build a new widget
 
     return MultiProvider(
       providers: [

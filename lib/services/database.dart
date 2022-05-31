@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fyp/models/finance.dart';
 import 'package:fyp/models/friends.dart';
 import 'package:fyp/models/goals.dart';
-import 'package:fyp/models/persona.dart';
 import 'package:fyp/models/user.dart';
 
 //Change to User Getter Class
@@ -118,6 +117,18 @@ class DatabaseService {
     });
   }
 
+  Future<void> updateGoalProgress(int amount, String docid) async {
+    return await goalsCollection
+        .doc(uid)
+        .collection('goalsdetails')
+        .doc(docid)
+        .update({'amount': amount});
+  }
+
+  Future<void> updateTotalProgress(int progress) async {
+    return await userCollection.doc(uid).update({'progress': progress});
+  }
+
   Future<void> deleteGoal(String docid) async {
     //doc will create a new uid of Database service
     return await goalsCollection
@@ -170,6 +181,16 @@ class DatabaseService {
         .delete();
   }
 
+  Future<void> addFriend(
+      String name, String email, int progress, String docid) async {
+    //doc will create a new uid of Database service
+    return await friendsCollection
+        .doc(uid)
+        .collection('friendrequestdetails')
+        .doc(docid)
+        .set({'name': name, 'email': email, 'progress': progress});
+  }
+
   Future<void> saveFriend(
       String name, String email, int progress, String docid) async {
     //doc will create a new uid of Database service
@@ -192,6 +213,7 @@ class DatabaseService {
 //READ
 
 //TODO!Convert to use this function instead of Stream Builder
+//de
 
   MyUserData _userFromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot) {
@@ -204,6 +226,7 @@ class DatabaseService {
       personaID: data['personaID'],
       personaname: data['personaname'],
       personaDescription: data['personaDescription'],
+      progress: data['progress'],
     );
   }
 
@@ -219,10 +242,6 @@ class DatabaseService {
   //Create user list
   List<MyUserData> _userListFromSnapshot(
       QuerySnapshot<Map<String, dynamic>> snapshot) {
-    // on parcours tout les docs et
-    // on les convertie en user
-    // on fait un toList car le map envoie un Iterable
-    // alors que l'on veut une list
     return snapshot.docs.map((doc) {
       return _userFromSnapshot(doc);
     }).toList();
@@ -234,20 +253,22 @@ class DatabaseService {
     return userCollection.snapshots().map(_userListFromSnapshot);
   }
 
-  PersonaData _personaFromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot) {
-    var data = snapshot.data();
-    if (data == null) throw Exception("persona not found");
-    return PersonaData(
-      personaid: snapshot.id,
-      name: data['name'],
-      description: data['description'],
-    );
+  List<MyUserData> _usersListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return MyUserData(
+        uid: doc.id,
+        name: (doc.data() as dynamic)['name'] ?? '',
+        email: (doc.data() as dynamic)['email'] ?? '',
+        personaDescription: (doc.data() as dynamic)['personadescription'] ?? '',
+        personaID: (doc.data() as dynamic)['personaid'] ?? '',
+        personaname: (doc.data() as dynamic)['personaname'] ?? '',
+        progress: (doc.data() as dynamic)['progress'] ?? 0,
+      );
+    }).toList();
   }
 
-  //change to persona collection
-  Stream<PersonaData> get persona {
-    return personaCollection.doc(uid).snapshots().map(_personaFromSnapshot);
+  Stream<List<MyUserData>> get usersSearch {
+    return userCollection.snapshots().map(_usersListFromSnapshot);
   }
 
   //READ GOALS
@@ -348,10 +369,4 @@ class DatabaseService {
         .snapshots()
         .map(_friendsrequestListFromSnapshot);
   }
-
-
-  
-
-
-  
 }

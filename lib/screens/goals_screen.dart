@@ -10,6 +10,7 @@ import 'package:fyp/components/round_text.dart';
 import 'package:fyp/components/round_text_field.dart';
 import 'package:fyp/constant.dart';
 import 'package:fyp/models/goals.dart';
+import 'package:fyp/models/user.dart';
 import 'package:fyp/services/database.dart';
 import 'package:fyp/services/dtblists/goallist.dart';
 import 'package:fyp/services/menu.dart';
@@ -17,10 +18,20 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class GoalsScreen extends StatelessWidget {
-  const GoalsScreen({Key? key}) : super(key: key);
+  GoalsScreen({Key? key}) : super(key: key);
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
+
+    MyUserData? userData;
+    //PersonaData? myPersonaData;
+
+    Stream<MyUserData?> myUserData = DatabaseService(uid).user;
+
     double width = MediaQuery.of(context).size.width;
     double percent = 0.75;
     final controller = ScrollController();
@@ -54,7 +65,20 @@ class GoalsScreen extends StatelessWidget {
                           color: kCream),
                     ],
                   ),
-                  const ProgressBar(percent: 0.5, progress: "50%"),
+                  StreamBuilder<MyUserData?>(
+                    stream: myUserData,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        userData = snapshot.data;
+                        var value = userData!.progress;
+                        return ProgressBar(
+                          percent: value / 100.toDouble(),
+                          progress: '$value%',
+                        );
+                      }
+                      return const Center(child: CircularProgressIndicator());
+                    },
+                  ),
                 ],
               ),
             ),
@@ -113,8 +137,6 @@ class ManageGoalsScreen extends StatelessWidget {
     double width = MediaQuery.of(context).size.width;
 
     //final _formKey = GlobalKey<FormState>();
-
-   
 
     return StreamProvider<List<GoalsData>>.value(
       initialData: const [],

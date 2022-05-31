@@ -97,7 +97,7 @@ class ExpenditureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 175,
-      height: 120,
+      height: 150,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -214,6 +214,58 @@ class PersonaCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         DatabaseService(user).updatePersona(personaname, personaDescription);
+      }, //update database details
+      child: Container(
+        height: 160,
+        width: 120,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(40),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 3,
+              offset: const Offset(0, 3), // changes position of shadow
+            ),
+          ],
+        ),
+        child: Column(
+          children: <Widget>[
+            Image.asset(icon, height: 110),
+            Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PersonaCardSetUp extends StatelessWidget {
+  final String icon;
+  final String title;
+  final String user;
+  final String personaname;
+  final String personaDescription;
+
+  const PersonaCardSetUp({
+    Key? key,
+    required this.icon,
+    required this.title,
+    required this.user,
+    required this.personaname,
+    required this.personaDescription,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        DatabaseService(user).savePersona(personaname, personaDescription);
       }, //update database details
       child: Container(
         height: 160,

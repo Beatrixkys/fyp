@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp/models/friends.dart';
+import 'package:fyp/models/user.dart';
 import 'package:fyp/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -124,6 +125,65 @@ class FriendRequestTile extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FriendList extends StatefulWidget {
+  const FriendList({
+    Key? key,
+    required this.friends,
+  }) : super(key: key);
+
+  final List<MyUserData> friends;
+  @override
+  State<FriendList> createState() => _FriendListState();
+}
+
+class _FriendListState extends State<FriendList> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    final friends = widget.friends;
+    final User? user = _auth.currentUser;
+    final uid = user!.uid;
+
+    return ListView.builder(
+      itemCount: friends.length,
+      itemBuilder: (context, index) {
+        return FriendsTile(friend: friends[index], uid: uid);
+      },
+    );
+  }
+}
+
+class FriendsTile extends StatelessWidget {
+  const FriendsTile({Key? key, required this.friend, required this.uid})
+      : super(key: key);
+
+  final MyUserData friend;
+
+  final String uid;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Card(
+        margin: const EdgeInsets.fromLTRB(10.0, 6.0, 10.0, 0.0),
+        child: ListTile(
+          title: Text(
+            friend.name,
+          ),
+          subtitle: Text(friend.email),
+          trailing: IconButton(
+            icon: const Icon(Icons.add_outlined),
+            onPressed: () async {
+              await DatabaseService(uid).addFriend(
+                  friend.name, friend.email, friend.progress, friend.uid);
+            },
           ),
         ),
       ),

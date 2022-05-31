@@ -11,6 +11,7 @@ class MyUserData {
   final String personaID;
   final String personaname;
   final String personaDescription;
+  final int progress;
 
   MyUserData(
       {required this.uid,
@@ -18,5 +19,6 @@ class MyUserData {
       required this.email,
       required this.personaID,
       required this.personaname,
-      required this.personaDescription});
+      required this.personaDescription,
+      required this.progress});
 }

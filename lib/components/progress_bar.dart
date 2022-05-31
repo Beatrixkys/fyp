@@ -3,6 +3,8 @@ import 'package:fyp/constant.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class ProgressBar extends StatelessWidget {
+  
+  
   final String progress;
   final double percent;
 
