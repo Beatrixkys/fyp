@@ -14,12 +14,14 @@ class LocalAuthApi {
     try {
       if (isBioAvailable && isAvailable) {
         //List<BiometricType> biometricTypes =
-            //await _bioauth.getAvailableBiometrics();
+        //await _bioauth.getAvailableBiometrics();
         //print(biometricTypes);
 
         isAuthenticated = await _bioauth.authenticate(
           localizedReason: 'Scan to Authenticate',
-          useErrorDialogs: true,
+          options: const AuthenticationOptions(
+              useErrorDialogs: true, biometricOnly: false),
+          //biometricOnly: false,
         );
       }
 
